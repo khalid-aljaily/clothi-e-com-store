@@ -1,0 +1,104 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'ntegral CF';
+    src: url('./assets/Demo_Fonts/Fontspring-DEMO-integralcf-bold.otf');
+}
+@font-face {
+    font-family: 'Satoshi';
+    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts//OTF//Satoshi-Regular.otf');
+}
+@font-face {
+    font-family: 'Satoshi-medium';
+    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts//OTF/Satoshi-Medium.otf');
+}
+@font-face {
+    font-family: 'Satoshi-bold';
+    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts/OTF//Satoshi-Bold.otf');
+}
+h2{
+    font-family: 'ntegral CF' !important;
+}
+p{
+    font-family: 'Satoshi-medium' !important;
+}
+
+.detalils-container>a {
+display: none;
+}
+.detalils-container p:not(:first-of-type){
+    font-family: 'Satoshi';
+    margin-bottom: 5px;
+    font-size:16px;
+    font-weight: 700;
+}
+.detalils-container p:first-of-type{
+font-weight: 400 ;
+font-size:18px;
+line-height: normal;
+}
+
+.detalils-container ul{
+    margin-bottom: 10px;
+}
+
+.detalils-container li{
+    font-family: 'Satoshi-medium';
+    color: #646464;
+}
+
+.About-brand-container a:last-child{
+display: none;
+}
+
+.About-brand-container h2{
+    margin-bottom: 8px;
+    font-family: "Satoshi-bold" !important;
+    font-size: 20px;
+}
+
+.About-brand-container p{
+    color: #646464;
+}
+
+.description li{
+  display: none;
+}
+.description br{
+  display: none;
+}
+
+
+/* Firefox */
+.custom-scrollbar {
+    scrollbar-color: #888 #f1f1f1; /* Color of the scrollbar thumb and track */
+    scrollbar-width: thin; /* Width of the scrollbar */
+  }
+  
+  .custom-scrollbar::-moz-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+  }
+  
+  .custom-scrollbar::-moz-scrollbar-track {
+    background-color: #f1f1f1; /* Background color of the scrollbar track */
+  }
+  
+  /* Webkit-based browsers */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 10px; /* Width of the scrollbar */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #f1f1f1; /* Background color of the scrollbar track */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #888; /* Color of the scrollbar thumb */
+    border-radius: 5px; /* Border radius of the scrollbar thumb */
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #555; /* Color of the scrollbar thumb on hover */
+  }
