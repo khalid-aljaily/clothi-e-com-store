@@ -29,58 +29,17 @@ import axios from "axios";
 import { InputWithButton } from "../Search";
 import MobileShopComponent from "./MobileShopComponent";
 
-export const myMenCats = [
-  "Men's Clothing",
-  "Big & Tall Clothing",
-  "Men's Coats & Jackets",
-  "Sports Fan Shop",
-  "Get Inspired",
-  "Men's Activewear",
-  "Men's Tops",
-  "Men's Bottoms",
-  "Men's Dress Clothing",
-  "Men's Underwear",
-  "Pajamas & Robes",
-  "Men's Swimwear",
-];
-export let menGetInspiredUnwantedCats = [
-  "Sustainability Shop",
-  "Holiday Gift Shop",
-];
+import { menGetInspiredUnwantedCats } from '../../utils/catigories'
+import { myKidsCats } from '../../utils/catigories'
+import { myWomenCats } from '../../utils/catigories'
+import { myMenCats } from '../../utils/catigories'
+import { myKidsUnwantedCats } from '../../utils/catigories'
 
-export const myWomenCats = [
-  "Women's Clothing",
-  "Juniors' Clothing",
-  "Plus Size",
-  "Petites",
-  "Maternity",
-  "Tops",
-  "Coats & Jackets",
-  "Bottoms",
-  "Dresses & Jumpsuits",
-  "Activewear",
-  "Pajamas & Robes",
-  "Intimates",
-  "Swimwear",
-  "Sports Fan",
-  "Wear to Work",
-  "Wedding Shop",
-];
 
-export const myKidsCats = [
-  "Girls' Clothes",
-  "Boys' Clothes",
-  "Gender Neutral",
-  "Adaptive Clothes",
-  "Shop By Category",
-];
-
-export let myKidsUnwantedCats = ["Shoes", "Accessories"];
 
 export function HeaderMegaMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
-  const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const [searchMode, setSearchMode] = useState(false);
   const theme = useMantineTheme();
   const [categories, setCatigories] = useState();
@@ -91,7 +50,7 @@ export function HeaderMegaMenu() {
     method: "GET",
     url: "https://kohls.p.rapidapi.com/categories/list",
     headers: {
-      "X-RapidAPI-Key": "71b967bd13mshbc4acad8ad7d6dbp1ece9fjsnc65d97d6dea7",
+      "X-RapidAPI-Key": '5665e12a68msh7b295ffc2b73c57p1998b6jsnb8d6f83c7938',
       "X-RapidAPI-Host": "kohls.p.rapidapi.com",
     },
   };
@@ -103,7 +62,7 @@ export function HeaderMegaMenu() {
     };
     fetchCatiogries();
   }, []);
-  console.log(categories);
+
 
   const handleSearchBtn = () => {
     setSearchMode(!searchMode);

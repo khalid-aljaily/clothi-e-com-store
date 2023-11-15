@@ -1,19 +1,15 @@
-import { useState } from 'react'
-import { Accordion, Anchor, Menu } from '@mantine/core'
-
-
-import { menGetInspiredUnwantedCats } from './header'
-import { myKidsCats } from './header'
-import { myWomenCats } from './header'
-import { myMenCats } from './header'
-import { myKidsUnwantedCats } from './header'
+import { Accordion } from '@mantine/core'
+import { menGetInspiredUnwantedCats } from '../../utils/catigories'
+import { myKidsCats } from '../../utils/catigories'
+import { myWomenCats } from '../../utils/catigories'
+import { myMenCats } from '../../utils/catigories'
+import { myKidsUnwantedCats } from '../../utils/catigories'
 import { Link } from 'react-router-dom'
 import { useLocation } from 'react-router-dom'
+
 function MobileShopComponent({ catigory }) {
   let withoutSubs = [];
   const location = useLocation()  
-  const [filter,setFilter] = useState()
-  console.log(filter)
   return (
     <div className='relative flex flex-col justify-end gap-2 mt-3'>
       <div>

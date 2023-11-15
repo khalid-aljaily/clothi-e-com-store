@@ -8,11 +8,12 @@ import { useMediaQuery } from '@mantine/hooks';
 
 
 
-function FilterComponent({ filter, setFilter, data, refetchData,initialActiveFilters,filterOpen,setFilterOpen }) {
+function FilterComponent({  data ,initialActiveFilters,filterOpen,setFilterOpen }) {
 const [pills, setPills] = useState();
 const location = useLocation()
 const navigate = useNavigate()
 const matches = useMediaQuery('(max-width:767px)')
+
 
   const pillsSet = () =>{
     let pillsArr = []
@@ -28,29 +29,101 @@ const matches = useMediaQuery('(max-width:767px)')
 useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
   
 
+
   
-  const handlePillRemove = (method,PropName) => {
+  const handlePillRemove = (PropName,prop) => {
     
-    setFilter({ ...filter, [method]: null });
+    navigate(
+      `/shop?CN=Department:Clothing${propertiesSetup(getUrlProperties(location.search)).replace('+'+prop, '')}${location.hash}`,
+      { state: location.state }
+    );
     setPills(pills.filter((pill) => pill.propName !== PropName));
   };
 
-  const handleFilterChange = (method, prop, propName) => {
-    if (filter[method] === prop) {
-      setFilter({ ...filter, [method]: null });
-      handlePillRemove(method,propName)
+  const getUrlProperties = (url) => {
+    const match = url.match(/CN=([^&]+)/);
+
+    if (match) {
+      const cnParam = match[1];
+      const cnProperties = {};
+
+      cnParam.split("+").forEach((param) => {
+        const [key, value] = param.split(":");
+        if (key !== "Department") {
+          cnProperties[key] = {
+            name: decodeURIComponent(value),
+            currentDimensionId: `${key}:${value}`,
+          };
+        }
+      });
+      return cnProperties;
     }
-    else if (filter[method]) {
-      
-      setFilter({ ...filter, [method]: prop });
+    return {};
+  };
+  console.log(getUrlProperties(location.search))
+
+
+  const propertiesSetup = (prop) => {
+    let filterString = "";
+    for (let filt in prop) {
+      if (prop[filt]) {
+        filterString += "+" + prop[filt].currentDimensionId;
+      }
+    }
+    return filterString;
+  };
+
+  
+  let obj = {method
+    : 
+    "Gender",
+    prop
+    : 
+    "Gender:Girls",
+    propName
+    : 
+    "Girls"}
+  const isActive = (value) =>{
+   
+    for(let i =0;i<pills?.length;i++){
+      if(pills[i].prop===value.currentDimensionId){
+       return false 
+      }
+    }
+   return true
+  }
+  
+  console.log(getUrlProperties(location.search));
+  console.log('hey',isActive(obj))
+
+
+  const handleFilterChange = (method, prop, propName) => {
+    if (getUrlProperties(location.search)[method]?.currentDimensionId
+    === prop) {
+      setPills(pills.filter((pill) => pill.propName !== propName));
+      navigate(
+        `/shop?CN=Department:Clothing${propertiesSetup(getUrlProperties(location.search)).replace('+'+prop, '')}${location.hash}`,
+        { state: location.state }
+      );
+      setPills(pills.filter((pill) => pill.propName !== propName));
+    }
+    else if (getUrlProperties(location.search)[method]) {
+    console.log((getUrlProperties(location.search)))
+    console.log(prop)
+      navigate(
+        `/shop?CN=Department:Clothing${propertiesSetup(getUrlProperties(location.search)).replace('+'+getUrlProperties(location.search)[method].currentDimensionId, '')}+${prop}${location.hash}`,
+        { state: location.state }
+      );
       setPills([...pills.filter((pill) => pill.method !== method),{method,prop,propName}]);
     }
     
     else {
-      setFilter({ ...filter, [method]: prop });
+      navigate(
+        `/shop?CN=Department:Clothing${propertiesSetup(getUrlProperties(location.search))}+${prop}${location.hash}`,
+        { state: location.state }
+      );
       setPills([...pills, { propName, method, prop }]);
     }
-    console.log(filter)
   };
   
   return (
@@ -69,7 +142,7 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
           <Pill
             key={pill.propName}
             withRemoveButton
-            onRemove={() => handlePillRemove(pill.method,pill.propName)}
+            onRemove={() => handlePillRemove(pill.propName,pill.prop)}
           >
             {pill.propName}
           </Pill>
@@ -77,28 +150,29 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
         </Group>
         
         <Accordion>
-          {data?.map((methode) => {
-            return (
+          {data?.map((method) => {
+                        return (
               <Accordion.Item
-                value={methode.index.toString()}
-                key={methode.index}
+                value={method.index.toString()}
+                key={method.index}
                 className="overflow-auto max-h-screen custom-scrollbar"
               >
                 <Accordion.Control className="md:h-14 ">
-                  {methode.label}
+                  {method.label}
                 </Accordion.Control>
                 <Accordion.Panel>
-                  {methode.name === 'Brand'
-                    ? methode.dimensionValues
+                  {method.name === 'Brand'
+                    ? method.dimensionValues
                         .filter((value) => value.productCount > 500)
                         .map((value) => {
+                         
                           return (
                             <div
                               key={value.index}
                               className="flex flex-row flex-nowrap justify-between items-center cursor-pointer hover:bg-gray-50"
                               onClick={() =>
                                 handleFilterChange(
-                                  methode.name,
+                                  method.name,
                                   value.currentDimensionId,
                                   value.name
                                 )
@@ -112,27 +186,24 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
                                 {value.name}
                               </Text>
                               <Badge
-                                hidden={
-                                  filter[methode.name] !==
-                                  value.currentDimensionId
-                                }
+                               
                                 variant="light"
-                                className="bg-gray-200  rounded-full  text-[9px]"
+                                className={`bg-gray-200  rounded-full  text-[9px] ${isActive(value)?'hidden':'inline'}`}
                               >
                                 Active
                               </Badge>
                             </div>
                           );
                         })
-                    : methode.name === 'Size'
-                    ? methode.dimensionValues.slice(0, 23).map((value) => {
+                    : method.name === 'Size'
+                    ? method.dimensionValues.slice(0, 23).map((value) => {
                         return (
                           <div
                             key={value.index}
                             className="flex flex-row flex-nowrap justify-between items-center cursor-pointer hover:bg-gray-50"
                             onClick={() =>
                               handleFilterChange(
-                                methode.name,
+                                method.name,
                                 value.currentDimensionId,
                                 value.name
                               )
@@ -146,26 +217,24 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
                               {value.name}
                             </Text>
                             <Badge
-                              hidden={
-                                filter[methode.name] !==
-                                value.currentDimensionId
-                              }
+                                 
                               variant="light"
-                              className="bg-gray-200  rounded-full  text-[9px]"
-                            >
+                              className={`bg-gray-200  rounded-full  text-[9px] ${isActive(value)?'hidden':'inline'}`}
+                              >
+                            
                               Active
                             </Badge>
                           </div>
                         );
                       })
-                    : methode.dimensionValues.map((value) => {
+                    : method.dimensionValues.map((value) => {
                         return (
                           <div
                             key={value.index}
                             className="flex flex-row flex-nowrap justify-between items-center cursor-pointer hover:bg-gray-50"
                             onClick={() =>
                               handleFilterChange(
-                                methode.name,
+                                method.name,
                                 value.currentDimensionId,
                                 value.name
                               )
@@ -179,12 +248,9 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
                               {value.name}
                             </Text>
                             <Badge
-                              hidden={
-                                filter[methode.name] !==
-                                value.currentDimensionId
-                              }
+                                
                               variant="light"
-                              className="bg-gray-200  rounded-full  text-[9px]"
+                              className={`bg-gray-200  rounded-full  text-[9px] ${isActive(value)?'hidden':'inline'}`}
                             >
                               Active
                             </Badge>
@@ -197,15 +263,6 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
           })}
         </Accordion>
       </div>
-      {/* <Button
-        mt={10}
-        display={'block'}
-        mx={'auto'}
-        onClick={() => refetchData()}
-        bg={'dark.8'}
-      >
-        Apply Filters
-      </Button> */}
     </div>
   );
 }

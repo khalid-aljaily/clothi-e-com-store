@@ -22,14 +22,13 @@ import {
   IconArrowRight,
   IconChevronDown,
 } from "@tabler/icons-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import filtericon from "../assets/filterIcon.svg";
 import FilterComponent from "../components/FilterComponent";
 import axios from "axios";
 
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useMediaQuery } from "@mantine/hooks";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 const items = [
   { title: "Home", href: "#" },
@@ -47,11 +46,10 @@ const items = [
 ));
 
 function ProductsPage() {
-  const smallScreen = useMediaQuery('(max-width:768px)')
   const [offset, setOffset] = useState(1);
   const location = useLocation();
-  const [isOpen, setIsOpen] = useState(smallScreen&&false);
-  console.log(location.search);
+  const [isOpen, setIsOpen] = useState(true);
+  
   const getUrlProperties = (url) => {
     const match = url.match(/CN=([^&]+)/);
 
@@ -76,37 +74,7 @@ function ProductsPage() {
   const [properties, setProperties] = useState(
     getUrlProperties(location.search)
   );
-  const navigate = useNavigate();
-  const mergeObjects = (properties) => {
-    let newObj = {};
-    for (let key in properties) {
-      newObj[key] = properties[key].currentDimensionId;
-    }
-    return newObj;
-  };
 
-  const [filter, setFilter] = useState({
-    Category: null,
-    Gender: null,
-    Brand: null,
-    price: null,
-    SizeRange: null,
-    Size: null,
-    Material: null,
-    Color: null,
-    TopRated: null,
-    ...mergeObjects(properties),
-  });
-
-  const filterSetup = (filter) => {
-    let filterString = "";
-    for (let filt in filter) {
-      if (filter[filt]) {
-        filterString += "+" + filter[filt];
-      }
-    }
-    return filterString;
-  };
   const propertiesSetup = (prop) => {
     let filterString = "";
     for (let filt in prop) {
@@ -132,7 +100,7 @@ function ProductsPage() {
         },
         headers: {
           "X-RapidAPI-Key":
-            "71b967bd13mshbc4acad8ad7d6dbp1ece9fjsnc65d97d6dea7",
+          '5665e12a68msh7b295ffc2b73c57p1998b6jsnb8d6f83c7938',
           "X-RapidAPI-Host": "kohls.p.rapidapi.com",
         },
       };
@@ -147,20 +115,28 @@ function ProductsPage() {
     setProperties(() => {
       return { ...getUrlProperties(location.search) };
     });
-    // setFilter(()=>{return{...mergeObjects(getUrlProperties(location.search))}})
+    
   }, [location]);
-
   useEffect(() => {
-    navigate(
-      `/shop?CN=Department:Clothing${filterSetup(filter)}${location.hash}`,
-      { state: location.state }
-    );
-  }, [filter, offset]);
-
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsOpen(false);
+      } else {
+        setIsOpen(true);
+      }
+    };
+  
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  
   useEffect(() => {
     refetch();
-  }, [properties]);
-  const refetchData = () => {};
+  }, [properties,offset]);
+
   const pageChange = (page) => {
     setOffset(page * 9 - 8);
   };
@@ -182,17 +158,14 @@ function ProductsPage() {
             filterOpen={isOpen}
             setFilterOpen={setIsOpen}
             initialActiveFilters={properties}
-            refetchData={refetchData}
-            filter={filter}
-            setFilter={setFilter}
             data={data?.payload?.dimensions?.filter((dim) => {
               return dim.name !== "Department" && dim.name !== "InStoreOnline";
             })}
           />
 
           {!isLoading ? (
-            <div className="relative flex-1">
-              <LoadingOverlay visible={isFetching} />
+            <div className=" flex-1">
+              
               <Flex className="justify-between items-center mb-4 md:mb-6 ">
                 <Title
                   order={3}
@@ -220,7 +193,8 @@ function ProductsPage() {
                 </Group>
               </Flex>
 
-              <div className=" grid gap-10 grid-cols-2 md:grid-cols-mine  xl:grid-cols-3 flex-1 ">
+              <div className="relative grid gap-10 grid-cols-2 md:grid-cols-mine  xl:grid-cols-3 flex-1 ">
+              <LoadingOverlay visible={isFetching} />
                 {data?.payload?.products?.map((prod) => (
                   <ProductCard key={prod.webId} prod={prod} />
                 ))}
@@ -256,6 +230,7 @@ function ProductsPage() {
 }
 
 const DropDown = ({ sorts }) => {
+  const [active,setActive] = useState(1)
   const { search } = useLocation();
   return (
     <Menu shadow="md" width={200}>
@@ -281,7 +256,7 @@ const DropDown = ({ sorts }) => {
             to={{ pathname: "/shop", search }}
             state={sort.ID}
           >
-            <Menu.Item>{sort.name}</Menu.Item>
+            <Menu.Item className={`hover:bg-gray-100 ${active==sort.ID&&"bg-gray-100"}`} onClick={()=>setActive(sort.ID)}>{sort.name}</Menu.Item>
           </Link>
         ))}
       </Menu.Dropdown>

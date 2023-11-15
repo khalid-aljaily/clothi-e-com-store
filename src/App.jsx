@@ -1,8 +1,4 @@
-import React,{ useEffect, useState } from 'react'
-
-import './App.css'
-
-import {Button, MantineProvider, createTheme, useMantineTheme} from '@mantine/core'
+import { MantineProvider, createTheme} from '@mantine/core'
 import '@mantine/core/styles.css'
 import { Route, Routes } from 'react-router-dom'
 import Home from './pages/Home'
@@ -15,7 +11,7 @@ import ProductDetail from './pages/ProductDetail'
 import ProductsPage from './pages/ProductsPage'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import Cart from './pages/Cart'
-import axios from 'axios'
+
 
 
 function App() {
@@ -29,16 +25,7 @@ const theme = createTheme({
  
   
 })
-const url = "http://localhost:5173/shop/catalog/sports-fan.jsp?CN=Occasion:Sports%20Fan&cc=mens-TN2.0-S-sportsfanshop";
 
-// Use regex to match and capture everything after the last '/'
-const match = url.match(/[^/]*\?(.*)/)[1];
-
-// Extract the captured part (everything after the last '/')
-const queryString = match ? match[1] : '';
-
-
-console.log(match);
   return (
     <QueryClientProvider  client={client} >
     <MantineProvider theme={theme}>
