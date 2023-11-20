@@ -1,47 +1,80 @@
-import { ActionIcon, Anchor, Breadcrumbs, Button, Divider, Flex, Group, Image, Stack, Text, TextInput, Title } from '@mantine/core';
-import React, { useState } from 'react'
-import arrow from "../assets/Frame.svg";
-import demo from '../assets/demo.png'
+import { ActionIcon, Button, Divider, Flex, Group, Stack, Text, TextInput, Title } from '@mantine/core';
+import  { useContext, useEffect, useState } from 'react'
 import { IconArrowRight, IconMinus, IconPlus, IconTag, IconTrash } from '@tabler/icons-react';
-const items = [
-    { title: "Home", href: "#" },
-    { title: "Shop", href: "#" },
-    { title: "Men", href: "#" },
-    { title: "T-Shirts", href: "#" },
-  ].map((item, index) => (
-    <Anchor
-      href={item.href}
-      key={index}
-      className="font-Satoshi-regular text-gray-400"
-    >
-      {item.title}
-    </Anchor>
-  ));
+import { cartContext } from '../App';
+import { useNavigate } from 'react-router-dom';
+
 function Cart() {
-    let discount = null
+    const {cartItems} = useContext(cartContext)
+    const [discount,setDiscount] = useState(null)
+    const [input,setInput] = useState('')
+    const [error,setError] = useState(null)
+   
+    let deliveryFee = 15
+    const promoCodes = [
+      {promoCode:'wiz20',amount:.2},
+      {promoCode:'wiz10',amount:.1}
+]
+const validatePromoCode = ()=>{
+    let promoCode = promoCodes.find((promo)=>promo.promoCode===input)
+    if(promoCode){
+        setDiscount(promoCode.amount)
+        setError(null)
+    }else{
+        setError('Invalid Promo Code try a code like wiz20')
+        setTimeout(()=>setError(null),3000)
+        clearTimeout(()=>setError(null),3000)
+    }
+
+}
+    const calculateSubtotal = ()=>{
+        let subtotal = 0
+        cartItems.forEach((item)=>{
+            subtotal += item.price*item.count
+        })
+        return subtotal.toFixed(2)
+    }
+    const calculateTotal = ()=>{
+        let total = 0
+        cartItems.forEach((item)=>{
+            total += item.price*item.count
+        })
+        if(discount){
+            total = total - (total*discount)
+        }
+        total = total + deliveryFee
+        return total.toFixed(2)
+    }
+
+    const [total,setTotal] = useState(calculateTotal())
+    const [subtotal,setSubtotal] = useState(calculateSubtotal())
+    useEffect(()=>{setTotal(calculateTotal());setSubtotal(calculateSubtotal())},[cartItems,cartContext])
+    
   return (
     <div className='px-5 md:px-[70px] '>
          <Divider />
-          <Breadcrumbs className="my-4 md:my-6" separator={<img src={arrow} />}>
-            {items}
-          </Breadcrumbs>
-          <Title order={2} className='md:text-[40px] md:my-10 my-5'>Your Cart</Title>
-          <Flex className='flex-col md:flex-row flex-wrap gap-5 '>
-            <div className='border flex-1 sm:min-w-[500px] p-5'>
-                <CartCard/>
+          <Title order={2} className='md:text-[40px] md:my-8 my-5'>Your Cart</Title>
+          <Flex className='flex-col md:flex-row flex-wrap gap-5 mb-8'>
+            <div className='border flex-1 sm:min-w-[500px] p-5 space-y-5 rounded-xl'>
+              {
+                cartItems.map((item)=>(
+                  <CartCard item ={item} key={item.id}/>
+                ))
+              }
+                
             </div>
-            <div className='flex-1  sm:min-w-[500px] border p-5'>
+            <div className='flex-1  sm:min-w-[500px] border p-5 rounded-xl'>
                 <Title order={3}>Order Summary</Title>
                 <Stack>
                     <Group className='justify-between'>
                         <Text className='text-[16px] sm:text-[18px] text-gray-500'>Subtotal</Text>
-                        <Text className='text-[16px] sm:text-[18px] font-Satoshi-bold'>$150</Text>
+                        <Text className='text-[16px] sm:text-[18px] font-Satoshi-bold'>${subtotal}</Text>
                     </Group>
                     {
                         discount&&
                         <Group className='justify-between'>
-                             <Text className='text-[16px] sm:text-[18px] text-gray-500'>Discount(-20%)</Text>
-                        <Text className='text-[16px] sm:text-[18px] text-red-600 font-Satoshi-bold'>-$10</Text>
+                             <Text className='text-[16px] sm:text-[18px] text-gray-500'>Discount(-{discount*100+'%'})</Text>
+                        <Text className='text-[16px] sm:text-[18px] text-red-600 font-Satoshi-bold'>-${(subtotal*discount).toFixed(2)}</Text>
                         </Group>
                         
                     }
@@ -52,22 +85,26 @@ function Cart() {
                         <Divider/>
                         <Group className='justify-between'>
                              <Text className='text-[16px] sm:text-[18px]'>Total</Text>
-                        <Text className='text-[16px] sm:text-[18px] font-Satoshi-bold'>$15</Text>
+                        <Text className='text-[16px] sm:text-[18px] font-Satoshi-bold'>${total}</Text>
                         </Group>
                         <Group>
                         <TextInput
-            placeholder="Search for products.."
+            placeholder="Add promo Code..."
+            value={input}
+            error = {error}
+            onChange={(e)=>setInput(e.currentTarget.value)}
             classNames={{
               root: " flex-1  ",
-
               input: "pl-12 font-Satoshi-regular border-none bg-gray-100 text-sm md:text-[16px] py-5 md:py-6",
+              error:'ml-7'
             }}
             leftSection={
                 <IconTag stroke={2} color={'gray'}  className='ml-3 w-5'/>
             }
             radius={"xl"}
           />
-                            <Button className='bg-black text-white w-32 h-[40px] md:h-[48px]  rounded-3xl'> Apply</Button>
+                            <Button className='bg-black text-white w-32 h-[40px] md:h-[48px]  rounded-3xl'
+                            onClick={validatePromoCode}> Apply</Button>
                         </Group>
                         <Button className='bg-black text-white  h-[40px] md:h-[48px]  rounded-3xl'> 
                         Go To Checkout
@@ -82,39 +119,56 @@ function Cart() {
   )
 }
 
-const CartCard = () => {
-    const [count,setCount] = useState(0)
+const CartCard = ({item}) => {
+    const {cartItems,setCartItems} = useContext(cartContext) 
+    const navigate = useNavigate()
+    const increaseCount = () => {
+        setCartItems([
+          ...cartItems.map((cartItem)=>cartItem.id==item.id?{...cartItem,count:cartItem.count+1}:cartItem)
+        ])
+      }
+      const decreaseCount = () => {
+        setCartItems([
+          ...cartItems.map((cartItem)=>cartItem.id==item.id?{...cartItem,count:cartItem.count-1}:cartItem)
+        ])
+      }
+      const removeItem = () => {
+        setCartItems([
+          ...cartItems.filter((cartItem)=>cartItem.id!=item.id)
+        ])
+      }
+
     return(
-        <div >
+        
            
-            <Group className='h-[100px] sm:h-[150px] relative ' >
+            <div className='h-[100px] sm:h-[150px] relative flex flex-nowrap gap-3' >
                 
-                <img src={demo} alt="" className=' object-cover rounded-2xl h-full aspect-square ' />
+                <img src={item.image} alt = {item.name} className=' object-cover rounded-2xl h-full aspect-square ' />
             
            
-            <div className='flex flex-col h-full '>
-                <Title order={3} className=' sm:mb-2
-                text-base sm:text-2xl mt-1'>Graphic T-shirt</Title>
-                <Text className='sm:mb-1 text-[12px] sm:text-[16px]'>Size:<Text className='text-gray-700 inline text-[12px] sm:text-[16px]'>XL</Text></Text>
-                <Text className='text-[12px] sm:text-[16px]'>Color:<Text className='text-gray-700 inline text-[12px] sm:text-[16px]'>Green</Text></Text>
-                <Text className='mt-auto text-lg sm:text-4xl !font-Satoshi-bold'>$150</Text>
+            <div className='flex flex-col h-full no-wrap'>
+                <Title order={3} className=' sm:mb-2 text-[14px]
+                sm:text-base mt-1 w-[90%] hover:underline cursor-pointer' onClick={()=>navigate(`/product/${item.id}`)}   >{item.name}</Title>
+                <Text className='sm:mb-1 text-[12px] sm:text-[16px]'>Size:<Text className='text-gray-700 inline text-[10px] sm:text-[14px]'> {item.size}</Text></Text>
+                <Text className='text-[12px] sm:text-[16px]'>Color:<Text className='text-gray-700 inline text-[10px] sm:text-[14px]'> {item.color}</Text></Text>
+                <Text className='mt-auto  sm:text-2xl !font-Satoshi-bold'>${item.price}</Text>
             </div>
-            <ActionIcon className='absolute top-0 right-0'><IconTrash color='red' className='w-10' /></ActionIcon>
-            <Group className="bg-gray-100 px-3 py-2 sm:px-5 sm:py-3 rounded-3xl absolute right-0 bottom-0">
+            <ActionIcon className='absolute top-0 right-0' onClick={removeItem}><IconTrash color='red' className='w-4 sm:w-10' /></ActionIcon>
+            <Group className="bg-gray-100 px-1 sm:px-3 py-[2px] sm:py-2  rounded-3xl absolute right-0 bottom-0">
                 <ActionIcon
                   unstyled
-                  onClick={() => count != 0 && setCount(count - 1)}
+                  onClick={() => item.count != 1 && decreaseCount()}
                 >
-                  <IconMinus className="active:scale-90 w-4 sm:w-6" />
+                  <IconMinus className="active:scale-90 w-3 sm:w-6" />
                 </ActionIcon>
-                <Text className="w-3 text-center ">{count}</Text>
-                <ActionIcon unstyled onClick={() => setCount(count + 1)}>
-                  <IconPlus className="active:scale-90 w-4 sm:w-6" />
+                <Text className="w-1 sm:w-3 text-center text-xs sm:text-base ">{item.count}</Text>
+                <ActionIcon unstyled onClick={increaseCount}>
+                  <IconPlus className="active:scale-90 w-3 sm:w-6" />
                 </ActionIcon>
               </Group>
                
-            </Group>
-        </div>
+            </div>
+        
     )
 }
 export default Cart

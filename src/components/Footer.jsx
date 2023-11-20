@@ -19,16 +19,49 @@ import mastercard  from '../assets/Badge (1).svg'
 import payPal from '../assets/Badge (2).svg'
 import ApplePay from '../assets/Badge (3).svg'
 import googlePay from '../assets/Badge (4).svg'
+import { useState } from "react";
 
 function Footer() {
+  const [email,setEmial] = useState('')
+  const [loading,setLoading] = useState(false)
+  const [error,setError] = useState(null)
+  const [showNotification,setShowNotification] = useState(false)
+  const vaidateEmail = () => { 
+    if(email.length === 0) {
+      setError('Email is required')
+      setTimeout(() => {
+        setError(null)
+      }, 2000);
+    }
+    else if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('Email is invalid')
+      setTimeout(() => {
+        setError(null)
+      }, 2000);
+    }
+    else {
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+        setEmial('')
+        setError(null)
+      }, 2000);
+    }
+
+  }
+
   return (
     <div>
+      
       <Flex className=" md:py-9 py-7 px-6 mx-5 md:mx-[70px] md:px-[64px] justify-center lg:justify-between bg-black items-center  flex-wrap rounded-3xl -mb-[40%] xs:-mb-[25%] sm:-mb-[20%] lg:-mb-[7%] z-10 relative">
         <h2 className="text-left sm:text-center lg:text-left text-[32px] lg:text-[40px] mb-8 lg:mb-0 lg:max-w-[50%] text-white">
           STAY UPTO DATE ABOUT OUR LATEST OFFERS
         </h2>
         <Stack className=" lg:min-w-[350px] gap-[14px] min-w-full">
           <TextInput
+            error = {error}
+            value={email}
+            onChange={(e)=>setEmial(e.target.value)}
             leftSection={<IconMail className="text-gray-500" />}
             type="email"
             placeholder="Enter your email address"
@@ -42,6 +75,8 @@ function Footer() {
             }}
           />
           <Button
+            onClick={vaidateEmail}
+            loading = {loading}
             h={"fit-content"}
             className="bg-white text-black font-Satoshi-medium rounded-3xl "
             loaderProps={{ size: "sm", color: "dark" }}

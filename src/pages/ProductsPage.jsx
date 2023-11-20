@@ -1,19 +1,16 @@
 import {
   ActionIcon,
-  Anchor,
-  Breadcrumbs,
   Button,
   Divider,
   Flex,
   Group,
-  LoadingOverlay,
+  Loader,
   Menu,
   Pagination,
   Skeleton,
   Text,
   Title,
 } from "@mantine/core";
-import arrow from "../assets/Frame.svg";
 import ProductCard from "../components/ProductCard";
 import { useEffect, useState } from "react";
 import {
@@ -26,30 +23,16 @@ import { useQuery } from "@tanstack/react-query";
 import filtericon from "../assets/filterIcon.svg";
 import FilterComponent from "../components/FilterComponent";
 import axios from "axios";
-
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-
-const items = [
-  { title: "Home", href: "#" },
-  { title: "Shop", href: "#" },
-  { title: "Men", href: "#" },
-  { title: "T-Shirts", href: "#" },
-].map((item, index) => (
-  <Anchor
-    href={item.href}
-    key={index}
-    className="font-Satoshi-regular text-gray-400"
-  >
-    {item.title}
-  </Anchor>
-));
+import { Link, useLocation } from "react-router-dom";
+import { useMediaQuery } from "@mantine/hooks";
 
 function ProductsPage() {
   const [offset, setOffset] = useState(1);
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
-  
+  const smallScreen = useMediaQuery("(max-width:768px)");
+
   const getUrlProperties = (url) => {
     const match = url.match(/CN=([^&]+)/);
 
@@ -85,7 +68,7 @@ function ProductsPage() {
     return filterString;
   };
 
-  const { data, isLoading, isFetching, refetch } = useQuery({
+  const { data, isFetching, refetch } = useQuery({
     queryKey: ["product"],
     queryFn: async () => {
       const options = {
@@ -99,13 +82,40 @@ function ProductsPage() {
           sortID: location.state,
         },
         headers: {
-          "X-RapidAPI-Key":
-          '5665e12a68msh7b295ffc2b73c57p1998b6jsnb8d6f83c7938',
+          "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
           "X-RapidAPI-Host": "kohls.p.rapidapi.com",
         },
       };
-      // const response = await axios.request(options);
-      // return response.data;
+      try {
+        const response = await axios.request(options);
+        return response.data;
+      } catch (err) {
+        if (err.response.status == 429) {
+          try {
+            const newOptions = {
+              ...options,
+              headers: {
+                "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
+                "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+              },
+            };
+            const newResponse = await axios.request(newOptions);
+            return newResponse.data;
+          } catch (err) {
+            if (err.response.status == 429) {
+              const newOptions = {
+                ...options,
+                headers: {
+                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_3,
+                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+                },
+              };
+              const newResponse = await axios.request(newOptions);
+              return newResponse.data;
+            }
+          }
+        }
+      }
     },
     staleTime: "infinity",
     enabled: false,
@@ -115,7 +125,6 @@ function ProductsPage() {
     setProperties(() => {
       return { ...getUrlProperties(location.search) };
     });
-    
   }, [location]);
   useEffect(() => {
     const handleResize = () => {
@@ -125,17 +134,17 @@ function ProductsPage() {
         setIsOpen(true);
       }
     };
-  
+
     handleResize();
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
+
   useEffect(() => {
     refetch();
-  }, [properties,offset]);
+  }, [properties, offset]);
 
   const pageChange = (page) => {
     setOffset(page * 9 - 8);
@@ -145,9 +154,6 @@ function ProductsPage() {
     <>
       <div className=" overflow-hidden px-5  md:px-[70px] ">
         <Divider />
-        {/* <Breadcrumbs className="my-4 md:my-6" separator={<img src={arrow} />}>
-          {items}
-        </Breadcrumbs> */}
         <Group
           justify="space-between"
           align="stretch"
@@ -155,6 +161,7 @@ function ProductsPage() {
           className="relative mt-4 md:mt-6"
         >
           <FilterComponent
+            sorts={data?.payload?.sorts}
             filterOpen={isOpen}
             setFilterOpen={setIsOpen}
             initialActiveFilters={properties}
@@ -163,100 +170,129 @@ function ProductsPage() {
             })}
           />
 
-          {!isLoading ? (
-            <div className=" flex-1">
-              
-              <Flex className="justify-between items-center mb-4 md:mb-6 ">
+          <div className=" flex-1">
+            <Flex className="justify-between items-center mb-4 md:mb-6 ">
+              <Group className="items-center">
                 <Title
                   order={3}
                   className="font-Satoshi-bold text-2xl lg:text-4xl "
                 >
                   Shop
                 </Title>
-                <Group gap={10} wrap="nowrap">
+                <Loader
+                  size={"12px"}
+                  className={`mt-2 ${!isFetching && "hidden"}`}
+                  type="bars"
+                />
+              </Group>
+
+              <Group gap={10} wrap="nowrap">
+                <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
+                  Showing {offset + "-" + (+offset + 8)} products of{" "}
+                  {data?.count}
+                </Text>
+                <Group className="gap-0 hidden md:flex " wrap="nowrap">
                   <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
-                    Showing {offset + "-" + (+offset + 8)} products of{" "}
-                    {data?.count}
+                    Sort By:
                   </Text>
-                  <Group className="gap-0 hidden md:flex " wrap="nowrap">
-                    <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
-                      Sort By:
-                    </Text>
-                    <DropDown sorts={data?.payload?.sorts} />
-                  </Group>
-                  <ActionIcon
-                    className={`bg-gray-100 p-2  rounded-full w-8 h-8 md:hidden`}
-                    onClick={() => setIsOpen(!isOpen)}
-                  >
-                    <img src={filtericon} alt="" />
-                  </ActionIcon>
-                </Group>
-              </Flex>
-
-              <div className="relative grid gap-10 grid-cols-2 md:grid-cols-mine  xl:grid-cols-3 flex-1 ">
-              <LoadingOverlay visible={isFetching} />
-                {data?.payload?.products?.map((prod) => (
-                  <ProductCard key={prod.webId} prod={prod} />
-                ))}
-              </div>
-
-              <Pagination.Root
-                total={Math.ceil(data?.count / 10)}
-                radius={"5px"}
-                classNames={{ control: "text-black" }}
-                onChange={(value) => pageChange(value)}
-              >
-                <Group gap={7} my="xl">
-                  <Pagination.First icon={IconArrowBarToLeft} />
-                  <Pagination.Previous
-                    icon={IconArrowLeft}
-                    className="mr-auto"
+                  <DropDown
+                    sorts={data?.payload?.sorts}
+                    label={
+                      <Button
+                        variant="subtle"
+                        classNames={{
+                          label:
+                            "w-full text-left font-Satoshi-bold text-[12px] sm:text-[14px] lg:text-base",
+                        }}
+                        className=" h-12 rounded-3xl inline relative "
+                        rightSection={<IconChevronDown className="w-5 -ml-2" />}
+                      >
+                        Sort By
+                      </Button>
+                    }
                   />
-                  <Pagination.Items />
-                  <Pagination.Next icon={IconArrowRight} className="ml-auto" />
-                  <Pagination.Last icon={IconArrowBarToRight} />
                 </Group>
-              </Pagination.Root>
+                <ActionIcon
+                  className={`bg-gray-100 p-2  rounded-full w-8 h-8 md:hidden`}
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <img src={filtericon} alt="" />
+                </ActionIcon>
+              </Group>
+            </Flex>
+
+            <div className="relative grid gap-10 grid-cols-2 md:grid-cols-mine  xl:grid-cols-3 flex-1 ">
+              {!data ? (
+                [1, 2, 3, 4, 5, 6, 7, 8, 9].map((prod) => (
+                  <div
+                    key={prod}
+                    className="max-w-[280px] h-[350px] flex flex-col justify-between"
+                  >
+                    <Skeleton className="h-[75%] w-full " />
+                    <Skeleton className="h-[8%] w-[70%] rounded-md" />
+                    <Skeleton className="h-[8%] w-[90%] rounded-md" />
+                  </div>
+                ))
+              ) : (
+                <>
+                  {data?.payload?.products?.length == 0 ? (
+                    <Title order={3} className="text-center">
+                      There are no products that matchs your criteria
+                    </Title>
+                  ) : (
+                    data?.payload?.products?.map((prod) => (
+                      <ProductCard key={prod.webId} prod={prod} />
+                    ))
+                  )}
+                </>
+              )}
             </div>
-          ) : (
-            <>
-              <Skeleton height={500} className="flex-1 w-full" />
-            </>
-          )}
+
+            <Pagination.Root
+              total={Math.ceil(data?.count / 10)}
+              radius={"5px"}
+              classNames={{ control: "text-black" }}
+              onChange={(value) => pageChange(value)}
+              siblings={smallScreen ? 0 : 2}
+            >
+              <Group gap={2} my="xl">
+                <Pagination.First icon={IconArrowBarToLeft} />
+                <Pagination.Previous icon={IconArrowLeft} className="mr-auto" />
+                <Pagination.Items />
+                <Pagination.Next icon={IconArrowRight} className="ml-auto" />
+                <Pagination.Last icon={IconArrowBarToRight} />
+              </Group>
+            </Pagination.Root>
+          </div>
         </Group>
       </div>
     </>
   );
 }
 
-const DropDown = ({ sorts }) => {
-  const [active,setActive] = useState(1)
+export const DropDown = ({ sorts, label }) => {
+  const [active, setActive] = useState(1);
   const { search } = useLocation();
   return (
     <Menu shadow="md" width={200}>
-      <Menu.Target>
-        <Button
-          variant="subtle"
-          classNames={{
-            label:
-              "w-full text-left font-Satoshi-bold text-[12px] sm:text-[14px] lg:text-base",
-          }}
-          className=" h-12 rounded-3xl inline relative "
-          rightSection={<IconChevronDown className="w-5 -ml-2" />}
-        >
-          Sort by
-        </Button>
-      </Menu.Target>
+      <Menu.Target>{label}</Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>Select Filter</Menu.Label>
+        <Menu.Label>Select a filter</Menu.Label>
         {sorts?.map((sort) => (
           <Link
             key={sort.ID}
             to={{ pathname: "/shop", search }}
             state={sort.ID}
           >
-            <Menu.Item className={`hover:bg-gray-100 ${active==sort.ID&&"bg-gray-100"}`} onClick={()=>setActive(sort.ID)}>{sort.name}</Menu.Item>
+            <Menu.Item
+              className={`hover:bg-gray-100 ${
+                active == sort.ID && "bg-gray-100"
+              }`}
+              onClick={() => setActive(sort.ID)}
+            >
+              {sort.name}
+            </Menu.Item>
           </Link>
         ))}
       </Menu.Dropdown>

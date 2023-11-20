@@ -2,9 +2,6 @@ import { Button, Flex, Group, Stack, Text } from "@mantine/core";
 import { brands } from "../utils/brands&media";
 import { useNavigate } from "react-router-dom";
 
-
-
-console.log(brands);
 function Hero() {
   const navigate = useNavigate()
   return (

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 import TesimonialCard from './TesimonialCard';
 import { dummyOpinions } from '../utils/opinions';
 import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
@@ -9,14 +9,14 @@ function Testimonials() {
 
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
-      left:-400, // Adjust this value to control the scroll distance
+      left:-400,
       behavior: 'smooth',
     });
   };
 
   const scrollRight = () => {
     scrollRef.current.scrollBy({
-      left: 400, // Adjust this value to control the scroll distance
+      left: 400, 
       behavior: 'smooth',
     });
   };

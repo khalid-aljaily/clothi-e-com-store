@@ -1,10 +1,7 @@
-
-import React from 'react'
 import NewArrivalsCard from './NewArrivalsCard'
 import { Button } from '@mantine/core'
-function TopSelling() {
- 
 
+function TopSelling() {
   return (
     <div className='py-16 px-5 md:px-[70px]'>
       <h2 className='text-center text-[32px] md:text-[48px] mb-8 md:mb-14'>New Arrivals</h2>

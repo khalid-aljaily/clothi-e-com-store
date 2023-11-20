@@ -14,35 +14,23 @@ import {
 import arrow from "../assets/Frame.svg";
 
 import StarRating from "../components/Stars";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import Images from "../components/Images";
 import Details from "../components/Details";
 import Section from "../components/Section";
 import { useParams } from "react-router-dom";
-const items = [
-  { title: "Home", href: "#" },
-  { title: "Shop", href: "#" },
-  { title: "Men", href: "#" },
-  { title: "T-Shirts", href: "#" },
-].map((item, index) => (
-  <Anchor
-    href={item.href}
-    key={index}
-    className="font-Satoshi-regular text-gray-400"
-  >
-    {item.title}
-  </Anchor>
-));
+import { cartContext } from "../App";
 
 function ProductDetail() {
   const {id} = useParams()
   const [data,setData] = useState()
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
   const [swatchColor, setSwatchColor] = useState('');
+  const [size,setSize] = useState('Medium')
   const descriptionRef = useRef()
+  const {cartItems,setCartItems} = useContext(cartContext)
 
   const changeSize = (e) => {
     let btns = document.querySelectorAll(".size-btn");
@@ -50,40 +38,95 @@ function ProductDetail() {
       btn.dataset.active = false;
     });
     e.currentTarget.dataset.active = true;
+    setSize(e.currentTarget.innerText)
   };
+
+  const addToCart = () => {
+    if(data)
+    if(cartItems.some((item)=>item.id==data?.payload.products[0].webID)){
+      setCartItems([
+        ...cartItems.map((item)=>item.id==data?.payload.products[0].webID?{...item,count:count+item.count}:item)
+      ])
+    }
+    else
+    setCartItems([
+      ...cartItems,
+      {
+        id: data?.payload.products[0].webID,
+        name: data?.payload.products[0].productTitle,
+        price: data?.payload.products[0].price.salePriceStatus?data?.payload.products[0].price.salePrice.minPrice:data?.payload.products[0].price.regularPrice
+        .minPrice,
+        image: data?.payload.products[0].images[0].url,
+        count,
+        size,
+        color:swatchColor
+      },
+    ]);
+  }
+  
 
   const options = {
     method: "GET",
     url: "https://kohls.p.rapidapi.com/products/detail",
     params: { webID: id },
     headers: {
-      "X-RapidAPI-Key": '71b967bd13mshbc4acad8ad7d6dbp1ece9fjsnc65d97d6dea7',
+      "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
       "X-RapidAPI-Host": "kohls.p.rapidapi.com",
     },
   };
-  useEffect(()=>{
-    const fetchData = async ()=> {
-      const response = await axios.request(options);
-      setSwatchColor(response.data.payload.products[0].swatchImages[0].color);
-      setData(response.data);
-      descriptionRef.current.innerHTML = data?.payload.products[0].description.shortDescription
-    }
-    fetchData()
-  },[])
- 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.request(options);
+        setSwatchColor(response.data.payload.products[0].swatchImages[0].color);
+        setData(response.data);
+        descriptionRef.current.innerHTML = data?.payload.products[0].description.shortDescription;
+      } catch (err) {
+        if (err.response?.status === 429) {
+          try {
+            const newOptions = {
+              ...options,
+              headers: {
+                "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
+                "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+              },
+            };
+            const newResponse = await axios.request(newOptions);
+            setSwatchColor(newResponse.data.payload.products[0].swatchImages[0].color);
+            setData(newResponse.data); 
 
-
-console.log(data)
+          } catch (err) {
+            if (err.response?.status === 429) {
+              const newOptions = {
+                ...options,
+                headers: {
+                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_3,
+                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+                },
+              };
+              const newResponse = await axios.request(newOptions);
+              setSwatchColor(newResponse.data.payload.products[0].swatchImages[0].color);
+              setData(newResponse.data); 
+              
+            }
+          }
+        } else {
+          console.error("err:", err.message);
+        }
+      }
+    };
+  
+    fetchData();
+  }, []);
+  
+  useEffect(()=>{if(data)descriptionRef.current.innerHTML = data.payload.products[0].description.shortDescription;},[data])
  
   return (
     <>
       <div className="flex-1 lg:h-[calc(100vh-96px)] overflow-hidden items-center px-5 md:px-[70px] ">
         <Divider />
-        <Breadcrumbs className="my-4 md:my-6" separator={<img src={arrow} />}>
-          {items}
-        </Breadcrumbs>
-        <Flex direction={{ base: "column", md: "row" }} gap={40}>
-          <Images data={data} swatchColor={swatchColor} />
+        <Flex direction={{ base: "column", md: "row" }} gap={40} mt={50}>
+          <Images data={data}  />
           <div className="flex-1">
             <div>
               {!data ? (
@@ -104,7 +147,7 @@ console.log(data)
               ) : (
                 <div className="flex">
                   <StarRating rating={data.payload.products[0].avgRating} />
-                  <p className="text-gray-500">
+                  <p className="text-gray-500 ml-2">
                     {data?.payload.products[0].avgRating}
                     <span className="text-black">/5</span>{" "}
                   </p>
@@ -127,17 +170,7 @@ console.log(data)
         }
       </Group>
                 )}
-                {/* <Text className="text-[24px] text-gray-400 line-through">
-                  $160
-                </Text>
-                <Badge
-                  variant="light"
-                  color={"red"}
-                  ff={"Satoshi"}
-                  className="y-4 px-2 text-[16px]"
-                >
-                  -30%
-                </Badge> */}
+               
               </Group>
               {!data ? (
                 <div className="mb-2">
@@ -235,6 +268,7 @@ console.log(data)
               <Button
                 className="bg-black text-white h-auto rounded-3xl flex-1"
                 classNames={{ inner: "py-[16px]" }}
+                onClick={addToCart}
               >
                 Add To Cart
               </Button>

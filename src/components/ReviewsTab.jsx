@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { ActionIcon, Box, Button, Divider, Menu, Skeleton, Text, Title } from "@mantine/core";
+import { ActionIcon, Box, Button, Divider, Menu, Modal, Skeleton, Text, Title } from "@mantine/core";
 import StarRating from "./Stars";
 import check from "../assets/check.svg";
 import filter from "../assets/filterIcon.svg";
@@ -8,6 +8,7 @@ import {
   IconChevronDown,
 } from "@tabler/icons-react";
 import { useMediaQuery } from "@mantine/hooks";
+import { LoginForm } from "./header/LoginForm";
 
 function formatDate(dateString) {
   const date = new Date(dateString);
@@ -24,24 +25,26 @@ function ReviewsTab({ id }) {
   const [filterType, setFilterType] = useState("SubmissionTime");
   const [sort, setSort] = useState("desc");
   const [reviews, setReviews] = useState([]);
-  const [offset, setOffset] = useState(0);
+  const [offset, setOffset] = useState(1);
+  const [loginModalOpen,setLoginModalOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const fetchData = async () => {
-    try {
-      const response = await axios.get(
+    const options = {
+      params: {
+        ProductId: id,
+        Limit: "500",
+        Offset: offset,
+        Sort: `${filterType}:${sort}`,
+      },
+      headers: {
+        "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
+        "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+      },
+    }
+   try{ const response = await axios.get(
         "https://kohls.p.rapidapi.com/reviews/list",
-        {
-          params: {
-            ProductId: id,
-            Limit: "500",
-            Offset: offset,
-            Sort: `${filterType}:${sort}`,
-          },
-          headers: {
-            "X-RapidAPI-Key": '71b967bd13mshbc4acad8ad7d6dbp1ece9fjsnc65d97d6dea7',
-            "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-          },
-        }
+        options
       );
       const filteredReviews = response.data.payload.Results.filter(
         (rev) =>
@@ -49,18 +52,43 @@ function ReviewsTab({ id }) {
           typeof rev.UserNickname === "string" &&
           rev.ReviewText.length < 400
       );
-      setReviews((prevReviews) => [...prevReviews, ...filteredReviews]);
-    } catch (error) {
+      setReviews((prevReviews) => [...prevReviews, ...filteredReviews]);}
+     catch (error) {
       console.error("Error fetching reviews:", error);
+      if(error.response.status ===429){
+      try{ const response = await axios.get(
+        "https://kohls.p.rapidapi.com/reviews/list",
+        {...options,headers:{"X-RapidAPI-Key":import.meta.env.VITE_API_KEY_2,"X-RapidAPI-Host": "kohls.p.rapidapi.com",}}
+      );
+      const filteredReviews = response.data.payload.Results.filter(
+        (rev) =>
+          typeof rev.ReviewText === "string" &&
+          typeof rev.UserNickname === "string" &&
+          rev.ReviewText.length < 400
+      );
+      setReviews((prevReviews) => [...prevReviews, ...filteredReviews]);}
+      catch(err){
+        const response = await axios.get(
+          "https://kohls.p.rapidapi.com/reviews/list",
+          {...options,headers:{"X-RapidAPI-Key":import.meta.env.VITE_API_KEY_2,"X-RapidAPI-Host": "kohls.p.rapidapi.com",}}
+        );
+        const filteredReviews = response.data.payload.Results.filter(
+          (rev) =>
+            typeof rev.ReviewText === "string" &&
+            typeof rev.UserNickname === "string" &&
+            rev.ReviewText.length < 400
+        );
+        setReviews((prevReviews) => [...prevReviews, ...filteredReviews]);
+      }}
     }
   };
 
   const fetchLess = () => {
-    if (offset === 0) return;
+    if (offset === 1) return;
     setReviews([])
-    setOffset(0);
+    setOffset(1);
     window.scrollTo({
-      top: 400,
+      top: 800,
       behavior: "smooth",
     });
   };
@@ -89,9 +117,12 @@ function ReviewsTab({ id }) {
             filterType={filterType}
             setFilterType={handleFilterChange}
           />
-          <Button className="bg-black text-white rounded-3xl h-12 w-40">
+          <Button className="bg-black text-white rounded-3xl h-12 w-40" onClick={()=>{!isLoggedIn&&setLoginModalOpen(!loginModalOpen)}}>
             Write a review
           </Button>
+          <Modal withCloseButton opened ={loginModalOpen} onClose={()=>setLoginModalOpen(false)} size={600} classNames={{header:'h-0 pt-0',close:'mt-16 mr-2'}} >
+        <LoginForm/>
+      </Modal> 
         </div>
       </div>
       <div className="flex flex-wrap justify-between mx-auto gap-4">

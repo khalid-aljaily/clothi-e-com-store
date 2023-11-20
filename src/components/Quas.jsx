@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Accordion, Skeleton } from "@mantine/core";
 import axios from "axios";
 
@@ -7,36 +7,66 @@ function Quas({ id }) {
   const [faq, setFaq] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const options = {
-    method: "GET",
-    url: "https://kohls.p.rapidapi.com/qnas/list",
-    params: {
-      ProductId: id,
-      Limit: "500",
-      Offset: "0",
-      Sort: "SubmissionTime:desc",
-    },
-    headers: {
-      "X-RapidAPI-Key": "71b967bd13mshbc4acad8ad7d6dbp1ece9fjsnc65d97d6dea7",
-      "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-    },
-  };
 
   useEffect(() => {
-    const fetchFaq = async () => {
+    const options = {
+      method: "GET",
+      url: "https://kohls.p.rapidapi.com/qnas/list",
+      params: {
+        ProductId: id,
+        Limit: "500",
+        Offset: "0",
+        Sort: "SubmissionTime:desc",
+      },
+      headers: {
+        "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
+        "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+      },
+    };
+  
+    const fetchQnas = async () => {
       try {
         const response = await axios.request(options);
         setFaq(response.data.payload);
         setIsLoading(false);
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
+      } catch (err) {
+        if (err.response?.status === 429) {
+            try {
+              const newOptions = {
+                ...options,
+                headers: {
+                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
+                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+                },
+              };
+              const newResponse = await axios.request(newOptions);
+              setFaq(newResponse.data.payload);
+              setIsLoading(false);
+            } catch (err) {
+              if (err.response?.status === 429) {
+              const newOptions = {
+                ...options,
+                headers: {
+                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_3,
+                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+                },
+              };
+  
+              const newResponse = await axios.request(newOptions);
+              setFaq(newResponse.data.payload);
+              setIsLoading(false);
+              
+            }
+            }
+          
+        } else {
+          console.error("err:", err.message);
+        }
       }
-    };
-
-    fetchFaq();
-  }, []);
-
+    }
+    fetchQnas()
+  },[])
+  
   const handleAccordionToggle = (index) => {
     setActiveItem((prevItem) => (prevItem === index ? null : index));
   };

@@ -2,72 +2,90 @@ import {
   HoverCard,
   Group,
   UnstyledButton,
-  Divider,
-  Center,
   Box,
   Burger,
   Drawer,
-  Collapse,
-  ScrollArea,
   rem,
-  useMantineTheme,
   Title,
   ActionIcon,
-  TextInput,
-  Menu,
-  Anchor,
   Tabs,
+  Indicator,
+  Text,
+  Modal,
 } from "@mantine/core";
 
 import { useDisclosure } from "@mantine/hooks";
-import { useEffect, useState } from "react";
-import { IconChevronDown, IconSearch } from "@tabler/icons-react";
+import { useContext, useEffect, useState } from "react";
 import classes from "./HeaderMegaMenu.module.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ShopComponent from "./ShopComponent";
 import axios from "axios";
 import { InputWithButton } from "../Search";
 import MobileShopComponent from "./MobileShopComponent";
 
-import { menGetInspiredUnwantedCats } from '../../utils/catigories'
-import { myKidsCats } from '../../utils/catigories'
-import { myWomenCats } from '../../utils/catigories'
-import { myMenCats } from '../../utils/catigories'
-import { myKidsUnwantedCats } from '../../utils/catigories'
-
-
+import { cartContext } from "../../App";
+import { LoginForm } from "./LoginForm";
 
 export function HeaderMegaMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [searchMode, setSearchMode] = useState(false);
-  const theme = useMantineTheme();
   const [categories, setCatigories] = useState();
-
+  const { cartItems } = useContext(cartContext);
+  const navigate = useNavigate()
   const links = ["Men", "Women", "Kids & Baby"];
 
-  const options = {
-    method: "GET",
-    url: "https://kohls.p.rapidapi.com/categories/list",
-    headers: {
-      "X-RapidAPI-Key": '5665e12a68msh7b295ffc2b73c57p1998b6jsnb8d6f83c7938',
-      "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-    },
-  };
-
   useEffect(() => {
-    const fetchCatiogries = async () => {
-      const response = await axios.request(options);
-      setCatigories(response.data.payload.categories);
+    const options = {
+      method: "GET",
+      url: "https://kohls.p.rapidapi.com/categories/list",
+      headers: {
+        "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
+        "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+      },
     };
-    fetchCatiogries();
-  }, []);
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.request(options);
+        setCatigories(response.data.payload.categories);
+      } catch (err) {
+        if (err.response?.status === 429) {
+          try {
+            const newOptions = {
+              ...options,
+              headers: {
+                "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
+                "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+              },
+            };
+            const newResponse = await axios.request(newOptions);
+            setCatigories(newResponse.data.payload.categories);
+          } catch (err) {
+            if (err.response?.status === 429) {
+              const newOptions = {
+                ...options,
+                headers: {
+                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_3,
+                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+                },
+              };
 
+              const newResponse = await axios.request(newOptions);
+              setCatigories(newResponse.data.payload.categories);
+            }
+          }
+        } else {
+          console.error("Failed to fetch categories:", err.message);
+        }
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const handleSearchBtn = () => {
     setSearchMode(!searchMode);
   };
-  console.log(theme);
   return (
     <Box py={{ base: 20, xs: 24 }} px={{ md: 70 }}>
       <header className={classes.header}>
@@ -103,14 +121,13 @@ export function HeaderMegaMenu() {
                 key={index}
               >
                 <HoverCard.Target>
-                  <Anchor
-                    href="#"
+                  <Text
                     className={`${classes.link} ${
                       link == "Kids & Baby" && "min-w-[100px]"
-                    }`}
+                    } cursor-default`}
                   >
                     {link}
-                  </Anchor>
+                  </Text>
                 </HoverCard.Target>
 
                 <HoverCard.Dropdown
@@ -130,7 +147,7 @@ export function HeaderMegaMenu() {
           />
 
           <Group>
-            <UnstyledButton
+            <ActionIcon
               hiddenFrom="sm"
               onClick={handleSearchBtn}
               className={`${searchMode ? "hidden" : "block"}`}
@@ -147,14 +164,21 @@ export function HeaderMegaMenu() {
                   fill="black"
                 />
               </svg>
-            </UnstyledButton>
-            <ActionIcon>
-              <Link to={"/cart"}>
-                {" "}
-                <img src="/src/assets/cartblack.svg" alt="" />
-              </Link>
             </ActionIcon>
-            <UnstyledButton>
+            <ActionIcon className="relative" onClick={()=>{navigate("/cart")}}>
+              <Indicator
+                color="#eee"
+                top={-10}
+                right={-20}
+                label={<Text className="text-[12px]">{cartItems.length}</Text>}
+                classNames={{ indicator: "p-[8px]  text-black " }}
+              />
+              
+                {" "}
+                <img src="/src/assets/cartblack.svg" alt="" className="w-11" />
+              
+            </ActionIcon>
+            <UnstyledButton onClick={() => setLoginModalOpen(!loginModalOpen)}>
               <img src="/src/assets/profile.svg" alt="profile image" />
             </UnstyledButton>
           </Group>
@@ -188,12 +212,22 @@ export function HeaderMegaMenu() {
               <Tabs.Panel key={link} value={link}>
                 <MobileShopComponent
                   catigory={categories?.filter((cat) => cat.name === link)[0]}
+                  closeDrawer={closeDrawer}
                 />
               </Tabs.Panel>
             ))}
           </Tabs>
         </Box>
       </Drawer>
+      <Modal
+        withCloseButton
+        opened={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        size={600}
+        classNames={{ header: "h-0 pt-0", close: "mt-16 mr-2" }}
+      >
+        <LoginForm />
+      </Modal>
     </Box>
   );
 }

@@ -1,14 +1,15 @@
 
-import { Accordion, ActionIcon, Anchor, Badge, Button, Group, Pill, Text, Title } from '@mantine/core'
+import { Accordion, ActionIcon, Badge, CloseButton, Group, Pill, Text, Title } from '@mantine/core'
 import { useEffect, useState } from 'react'
 import filterIcon from '../assets/filterGray.svg'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useMediaQuery } from '@mantine/hooks';
+import { DropDown } from '../pages/ProductsPage';
 
 
 
 
-function FilterComponent({  data ,initialActiveFilters,filterOpen,setFilterOpen }) {
+function FilterComponent({  data ,initialActiveFilters,filterOpen,setFilterOpen,sorts }) {
 const [pills, setPills] = useState();
 const location = useLocation()
 const navigate = useNavigate()
@@ -60,7 +61,7 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
     }
     return {};
   };
-  console.log(getUrlProperties(location.search))
+
 
 
   const propertiesSetup = (prop) => {
@@ -73,16 +74,6 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
     return filterString;
   };
 
-  
-  let obj = {method
-    : 
-    "Gender",
-    prop
-    : 
-    "Gender:Girls",
-    propName
-    : 
-    "Girls"}
   const isActive = (value) =>{
    
     for(let i =0;i<pills?.length;i++){
@@ -93,10 +84,6 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
    return true
   }
   
-  console.log(getUrlProperties(location.search));
-  console.log('hey',isActive(obj))
-
-
   const handleFilterChange = (method, prop, propName) => {
     if (getUrlProperties(location.search)[method]?.currentDimensionId
     === prop) {
@@ -108,8 +95,6 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
       setPills(pills.filter((pill) => pill.propName !== propName));
     }
     else if (getUrlProperties(location.search)[method]) {
-    console.log((getUrlProperties(location.search)))
-    console.log(prop)
       navigate(
         `/shop?CN=Department:Clothing${propertiesSetup(getUrlProperties(location.search)).replace('+'+getUrlProperties(location.search)[method].currentDimensionId, '')}+${prop}${location.hash}`,
         { state: location.state }
@@ -132,9 +117,13 @@ useEffect(()=>{setPills([...pillsSet()])},[initialActiveFilters])
         <Title order={3} className="text-center  md:py-2">
           Filters
         </Title>
-        <ActionIcon disabled = {!matches} onClick={()=>{setFilterOpen(!filterOpen)}}>
+        <Group gap={0}>
+        <DropDown sorts={sorts} label={ <ActionIcon disabled = {!matches} >
           <img src={filterIcon} alt="gray filter icon" width={20} />
-        </ActionIcon>
+        </ActionIcon>} />
+        <CloseButton hiddenFrom='sm' c={'red'} variant = 'subtle' onClick={()=>{setFilterOpen(!filterOpen)}}/>
+        </Group>
+        
       </Group>
       <div className="mx-5">
         <Group gap={5} my={10}>

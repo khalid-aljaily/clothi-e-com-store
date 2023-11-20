@@ -1,12 +1,8 @@
 import { Flex, Image, Skeleton } from '@mantine/core';
-import React, { useEffect, useState } from 'react';
-import demo from "../assets/demo.png";
+import { useState } from 'react';
 
-function Images({ data, swatchColor }) {
-  console.log(swatchColor);
-  const regex = /_([^/]+)\?wid=/;
-  const [color, setColor] = useState(data?.payload.products[0].images[0].url.match(regex)[1]);
-  const [src, setSrc] = useState(data?.payload.products[0].altImages[0].url.replaceAll('50', '700'));
+function Images({ data }) {
+  const [src, setSrc] = useState(!data?.payload?.products[0]?.altImages ? data?.payload.products[0]?.images[0]?.url?.replace(/180(?!.*180.*180)/g, '700'):data?.payload?.products[0]?.images[0]?.url?.replace(/50(?!.*50.*50)/g, '700'));
   const changeImage = (img) => {
     setSrc(img.src.replaceAll('180', '800'));
     [...document.querySelectorAll('.alt-image')].forEach((im) => im.classList.remove('border-[3px]'));
@@ -31,7 +27,7 @@ function Images({ data, swatchColor }) {
               <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500 border-[3px]" />
             ) : (
               <Image
-                src={data?.payload.products[0].altImages[0]?.url?.replace(/50(?!.*50.*50)/g, '180')}
+                src={data?.payload.products[0]?.images[0]?.url}
                 className="aspect-square rounded-3xl object-cover alt-image border-gray-500 border-[3px]"
                 onClick={(e) => { changeImage(e.currentTarget) }}
               />
@@ -42,7 +38,7 @@ function Images({ data, swatchColor }) {
               <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500" />
             ) : (
               <Image
-                src={data.payload.products[0].altImages[1]?.url?.replace(/50(?!.*50.*50)/g, '180')}
+                src={data?.payload.products[0].altImages&&data.payload.products[0].altImages[0]?.url?.replace(/50(?!.*50.*50)/g, '180')}
                 className="aspect-square rounded-3xl object-cover alt-image border-gray-500"
                 onClick={(e) => { changeImage(e.currentTarget) }}
               />
@@ -53,7 +49,7 @@ function Images({ data, swatchColor }) {
               <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500" />
             ) : (
               <Image
-                src={data.payload.products[0].altImages[2]?.url?.replace(/50(?!.*50.*50)/g, '180')}
+                src={data?.payload.products[0].altImages&&data.payload.products[0].altImages[1]?.url?.replace(/50(?!.*50.*50)/g, '180')}
                 className="aspect-square rounded-3xl object-cover alt-image border-gray-500"
                 onClick={(e) => { changeImage(e.currentTarget) }}
               />
@@ -65,7 +61,7 @@ function Images({ data, swatchColor }) {
             <Skeleton className="h-full w-full" c={'lime'} />
           ) : (
             <Image
-              src={src || data?.payload.products[0].altImages[0]?.url?.replace(/50(?!.*50.*50)/g, '700')}
+              src={src || data?.payload?.products[0].images[0]?.url?.replace(/180(?!.*180.*180)/g, '700')}
               className="h-full w-full object-cover object-center"
             />
           )}

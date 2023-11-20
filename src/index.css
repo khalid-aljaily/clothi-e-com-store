@@ -4,19 +4,19 @@
 
 @font-face {
     font-family: 'ntegral CF';
-    src: url('./assets/Demo_Fonts/Fontspring-DEMO-integralcf-bold.otf');
+    src: url('./assets/fonts/IntegralCF-Bold.woff');
 }
 @font-face {
     font-family: 'Satoshi';
-    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts//OTF//Satoshi-Regular.otf');
+    src: url('./assets/fonts/satoshi/Satoshi-Regular.woff');
 }
 @font-face {
     font-family: 'Satoshi-medium';
-    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts//OTF/Satoshi-Medium.otf');
+    src: url('./assets/fonts/satoshi/Satoshi-Medium.woff');
 }
 @font-face {
     font-family: 'Satoshi-bold';
-    src: url('./assets/FontshareKit-2310002055/Satoshi//Fonts/OTF//Satoshi-Bold.otf');
+    src: url('./assets/fonts/satoshi/Satoshi-Bold.woff');
 }
 h2{
     font-family: 'ntegral CF' !important;
@@ -39,11 +39,17 @@ font-weight: 400 ;
 font-size:18px;
 line-height: normal;
 }
+.detalils-container>br{
+  display: none;
+}
 
 .detalils-container ul{
     margin-bottom: 10px;
 }
 
+.detalils-container > li {
+  display: none;
+}
 .detalils-container li{
     font-family: 'Satoshi-medium';
     color: #646464;

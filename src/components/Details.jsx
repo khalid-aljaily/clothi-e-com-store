@@ -1,12 +1,11 @@
 import { Tabs } from '@mantine/core'
-import React from 'react'
 import ReviewsTab from './ReviewsTab'
 import ProductDetailsTab from './ProductDetailsTab'
 import Quas from './Quas'
 
 function Details({id,details,brandDetails,brand}) {
   return (
-    <Tabs defaultValue="product-details" className='p-5 md:p-[70px]'>
+    <Tabs defaultValue="product-details" className='p-5 md:p-[70px] !pb-0'>
       <Tabs.List>
         <Tabs.Tab value="product-details" className='flex-1 data-[active=true]:font-Satoshi-bold text-gray-500 data-[active=true]:text-black font-Satoshi-medium text-[20px]'>
           Product Details
