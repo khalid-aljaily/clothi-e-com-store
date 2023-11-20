@@ -1,7 +1,8 @@
 import { Button, Flex, Group, Stack, Text } from "@mantine/core";
 import { brands } from "../utils/brands&media";
 import { useNavigate } from "react-router-dom";
-
+import hero from '../assets/ccfd8aa5825862cdb9604a4fb4930464 (1).jpg'
+import victor from '../assets/Vector.svg'
 function Hero() {
   const navigate = useNavigate()
   return (
@@ -78,20 +79,20 @@ function Hero() {
         </Stack>
         <div className="relative  self-end ">
           <img
-            src="/src/assets/Vector.svg"
-            alt=""
+            src={victor} 
+            alt="victor"
             className="absolute top-11 w-20 right-4 z-10"
           />
           <div className="max-w-[700px]  -mb-40 h-full overflow-hidden">
             <img
-              src="/src/assets/ccfd8aa5825862cdb9604a4fb4930464 (1).jpg"
+              src={hero}
               alt="hero image"
             />
           </div>
 
           <img
-            src="/src/assets/Vector.svg"
-            alt=""
+            src={victor}
+            alt="victor"
             className="absolute top-36 md:top-56 left-4 w-11 z-10"
           />
         </div>

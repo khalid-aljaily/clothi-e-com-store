@@ -22,10 +22,10 @@ import ShopComponent from "./ShopComponent";
 import axios from "axios";
 import { InputWithButton } from "../Search";
 import MobileShopComponent from "./MobileShopComponent";
-
+import profile from '../../assets/profile.svg'
 import { cartContext } from "../../App";
 import { LoginForm } from "./LoginForm";
-
+import cart from '../../assets/cartblack.svg'
 export function HeaderMegaMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
@@ -175,11 +175,11 @@ export function HeaderMegaMenu() {
               />
               
                 {" "}
-                <img src="/src/assets/cartblack.svg" alt="" className="w-11" />
+                <img src={cart} alt="" className="w-11" />
               
             </ActionIcon>
             <UnstyledButton onClick={() => setLoginModalOpen(!loginModalOpen)}>
-              <img src="/src/assets/profile.svg" alt="profile image" />
+              <img src={profile} alt="profile image" />
             </UnstyledButton>
           </Group>
         </Group>
