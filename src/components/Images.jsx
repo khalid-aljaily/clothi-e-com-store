@@ -2,7 +2,7 @@ import { Flex, Image, Skeleton } from '@mantine/core';
 import { useState } from 'react';
 
 function Images({ data }) {
-  const [src, setSrc] = useState(!data?.payload?.products[0]?.altImages ? data?.payload.products[0]?.images[0]?.url?.replace(/180(?!.*180.*180)/g, '700'):data?.payload?.products[0]?.images[0]?.url?.replace(/50(?!.*50.*50)/g, '700'));
+  const [src, setSrc] = useState(data?.payload?.products[0]?.images[0]?.url?.replace(/180(?!.*180.*180)/g, '700'));
   const changeImage = (img) => {
     setSrc(img.src.replaceAll('180', '800'));
     [...document.querySelectorAll('.alt-image')].forEach((im) => im.classList.remove('border-[3px]'));

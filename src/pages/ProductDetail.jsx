@@ -22,10 +22,11 @@ import Details from "../components/Details";
 import Section from "../components/Section";
 import { useParams } from "react-router-dom";
 import { cartContext } from "../App";
+import { useQuery } from "@tanstack/react-query";
 
 function ProductDetail() {
   const {id} = useParams()
-  const [data,setData] = useState()
+  // const [data,setData] = useState()
   const [count, setCount] = useState(1);
   const [swatchColor, setSwatchColor] = useState('');
   const [size,setSize] = useState('Medium')
@@ -74,15 +75,24 @@ function ProductDetail() {
       "X-RapidAPI-Host": "kohls.p.rapidapi.com",
     },
   };
-  useEffect(() => {
-    const fetchData = async () => {
+  const { data } = useQuery({
+    queryKey: ["productDetail"],
+    queryFn: async () => {   
+      const options = {
+        method: "GET",
+        url: "https://kohls.p.rapidapi.com/products/detail",
+        params: { webID: id },
+        headers: {
+          "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
+          "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+        },
+      };
       try {
         const response = await axios.request(options);
         setSwatchColor(response.data.payload.products[0].swatchImages[0].color);
-        setData(response.data);
-        descriptionRef.current.innerHTML = data?.payload.products[0].description.shortDescription;
+        return response.data;
       } catch (err) {
-        if (err.response?.status === 429) {
+        if (err.response.status == 429) {
           try {
             const newOptions = {
               ...options,
@@ -93,10 +103,9 @@ function ProductDetail() {
             };
             const newResponse = await axios.request(newOptions);
             setSwatchColor(newResponse.data.payload.products[0].swatchImages[0].color);
-            setData(newResponse.data); 
-
+            return newResponse.data;
           } catch (err) {
-            if (err.response?.status === 429) {
+            if (err.response.status == 429) {
               const newOptions = {
                 ...options,
                 headers: {
@@ -106,20 +115,17 @@ function ProductDetail() {
               };
               const newResponse = await axios.request(newOptions);
               setSwatchColor(newResponse.data.payload.products[0].swatchImages[0].color);
-              setData(newResponse.data); 
-              
+              return newResponse.data;
             }
           }
-        } else {
-          console.error("err:", err.message);
         }
       }
-    };
-  
-    fetchData();
-  }, []);
-  
-  useEffect(()=>{if(data)descriptionRef.current.innerHTML = data.payload.products[0].description.shortDescription;},[data])
+    },
+    staleTime: "infinity",
+  });
+
+  useEffect(()=>{
+    if(data)descriptionRef.current.innerHTML = data.payload.products[0].description.shortDescription;},[data])
  
   return (
     <>
@@ -129,7 +135,7 @@ function ProductDetail() {
           <Images data={data}  />
           <div className="flex-1">
             <div>
-              {!data ? (
+              {!data? (
                 <>
                   <Skeleton height={25} />
                   <Skeleton height={25} width={"40%"} mt={5} />

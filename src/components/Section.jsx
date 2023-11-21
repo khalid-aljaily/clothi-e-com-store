@@ -69,7 +69,7 @@ function Section({ title, sortID }) {
       </h2>
       <div className="flex justify-between gap-4 overflow-auto snap-x snap-mandatory">
         {data ? (
-          data.payload.products.map((product) => (
+          data?.payload.products?.map((product) => (
             <div key={product.webID} className="snap-center">
               <SectionCard product={product} />
             </div>
