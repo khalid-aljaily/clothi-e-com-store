@@ -11,23 +11,26 @@ function ProductCard({prod}) {
           className=' aspect-square  max-w-[100%]'
         />
       </div>
-      <Link to={`/product/${prod.webID}`}>
-      <Text  ff={'Satoshi-bold'} className='text-[12px] sm:text-[16px] lg:text-[20px] mt-2 md:mt-5 hover:underline'>{prod.productTitle}</Text>
+      <Link to={`/product/${prod.webID}`} onClick={()=>{window.scrollTo({
+            top: 0,
+            behavior: 'instant',
+          })}}>
+      <Text  ff={'Satoshi-bold'} className='text-[16px] lg:text-[20px] mt-2 md:mt-5 hover:underline mb-1'>{prod.productTitle}</Text>
       </Link>
-      <Group className='mt-1'>
-  { prod.rating.avgRating ?<StarRating rating={prod.rating.avgRating}/>: <Text className='text-sm'>No rating for this pooduct yet</Text>}
+      <Group className='mt-auto'>
+  { prod.rating.avgRating ?<StarRating rating={prod.rating.avgRating}/>: <Text className='text-[9px]'>No rating for this pooduct yet</Text>}
    { prod.rating.count&&<Text className='text-[9px] sm:text-xs'>({prod.rating.count})</Text>}
       </Group>
 
 
-      <Group className={`gap-3 sm:gap-5 justify-between ${!prod.rating.avgRating?"mt-auto":'mt-2'}`}>
+      <Group className={`gap-2 sm:gap-5  mt-1 md:mt-2`}>
         {
           prod.prices[0].salePriceStatus
           ?
        ( <>
        <Text className='text-[14px] sm:text-base lg:text-[24px]'>${prod.prices[0].salePrice.minPrice}</Text>
         <Text className='text-[14px] sm:text-base lg:text-[24px] text-gray-400 line-through'>${prod.prices[0].regularPrice.minPrice}</Text>
-      <Badge variant='light' color={'red'} ff={'Satoshi'} className='h-5 sm:h-6 sm:w-14 lg:h-8 w-12 lg:w-16 p-0 text-[10px] sm:text-base md:text-[16px] '>{(prod.prices[0].salePrice.minPrice/prod.prices[0].regularPrice.minPrice*100 - 100).toFixed(0) }%</Badge></>)
+      <Badge variant='light' color={'red'} ff={'Satoshi'} className='h-4 sm:h-6 sm:w-14 lg:h-8 w-9 lg:w-16 p-0 text-[10px] sm:text-base md:text-[16px] '>{(prod.prices[0].salePrice.minPrice/prod.prices[0].regularPrice.minPrice*100 - 100).toFixed(0) }%</Badge></>)
       :
 <Text className='text-[14px] sm:text-base lg:text-[24px]'>${prod.prices[0].regularPrice.minPrice}</Text>
         }

@@ -4,7 +4,6 @@ import {
   ActionIcon,
   useMantineTheme,
   CloseButton,
-  Tooltip,
   Modal,
 } from "@mantine/core";
 import { IconSearch } from "@tabler/icons-react";
@@ -18,9 +17,6 @@ export function InputWithButton({ searchMode, setSearchMode }) {
   const handleClose = () => {
     setSearchMode(false);
     setValue("");
-    if (location.pathname == "/shop") {
-      navigate({ pathname: "/shop", search: location.search });
-    }
   };
   return (
     <>
@@ -42,6 +38,7 @@ export function InputWithButton({ searchMode, setSearchMode }) {
             variant="subtle"
             onClick={() => {
               value &&
+                setValue('')
                 navigate(
                   location.search
                     ? {
@@ -58,14 +55,6 @@ export function InputWithButton({ searchMode, setSearchMode }) {
         }
         radius={50}
         rightSection={
-          <Tooltip
-            label="remove search keyword"
-            withArrow
-            position="bottom"
-            classNames={{
-              tooltip: "bg-gray-50 text-black text-xs drop-shadow-sm",
-            }}
-          >
             <CloseButton
               hidden={value === ""}
               size={20}
@@ -73,16 +62,18 @@ export function InputWithButton({ searchMode, setSearchMode }) {
               className="text-red-600 mr-2   hover:shadow-2xl "
               onClick={handleClose}
             />
-          </Tooltip>
         }
       />
-      <Modal
+      <Modal 
         transitionProps={{}}
         opened={searchMode}
         withOverlay={false}
         withCloseButton={false}
         className="h-fit mt-9 "
-        classNames={{ inner: "mt-6", body: "p-1", content: "shadow-sm" }}
+        classNames={{ inner: "mt-6 absolute", body: "p-1 ", content: "shadow-sm " }}
+        lockScroll ={ false}
+        yOffset={30}
+        
       >
         <TextInput
           onChange={(event) => setValue(event.target.value)}
@@ -102,6 +93,7 @@ export function InputWithButton({ searchMode, setSearchMode }) {
               variant="subtle"
               onClick={() => {
                 value &&
+                  setValue('')
                   navigate(
                     location.search
                       ? {
@@ -118,21 +110,12 @@ export function InputWithButton({ searchMode, setSearchMode }) {
           }
           radius={"lg"}
           rightSection={
-            <Tooltip
-              label="remove search keyword"
-              withArrow
-              position="bottom"
-              classNames={{
-                tooltip: "bg-gray-50 text-black text-xs drop-shadow-sm",
-              }}
-            >
               <CloseButton
                 size={20}
                 stroke={2}
                 className="text-red-600 mr-2   hover:shadow-2xl "
                 onClick={handleClose}
               />
-            </Tooltip>
           }
         />
       </Modal>

@@ -8,6 +8,7 @@ import {
   Menu,
   Pagination,
   Skeleton,
+  Stack,
   Text,
   Title,
 } from "@mantine/core";
@@ -24,7 +25,7 @@ import filtericon from "../assets/filterIcon.svg";
 import FilterComponent from "../components/FilterComponent";
 import axios from "axios";
 import { IconArrowLeft } from "@tabler/icons-react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mantine/hooks";
 
 function ProductsPage() {
@@ -32,6 +33,7 @@ function ProductsPage() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
   const smallScreen = useMediaQuery("(max-width:768px)");
+  const navigate = useNavigate()
 
   const getUrlProperties = (url) => {
     const match = url.match(/CN=([^&]+)/);
@@ -142,6 +144,9 @@ function ProductsPage() {
     };
   }, []);
 
+  const handleClear = () =>{
+    navigate({ pathname: "/shop", search: location.search })
+  }
   useEffect(() => {
     refetch();
   }, [properties, offset]);
@@ -171,8 +176,9 @@ function ProductsPage() {
           />
 
           <div className=" flex-1">
-            <Flex className="justify-between items-center mb-4 md:mb-6 ">
-              <Group className="items-center">
+            <Flex className="justify-between items-end mb-4 md:mb-6 ">
+              <Stack gap={0}>
+              <Group className="items-center gap-2">
                 <Title
                   order={3}
                   className="font-Satoshi-bold text-2xl lg:text-4xl "
@@ -185,13 +191,18 @@ function ProductsPage() {
                   type="bars"
                 />
               </Group>
+             { location.hash&&
+             <Text className="text-[10px] sm:text-base inline">Results for: "{location.hash.slice(1)}" 
+              <button className="text-red-600 active:translate-y-[1px] ml-2 text-[10px] sm:text-[14px]  inline hover:underline" onClick={handleClear}>Clear</button>
+              </Text>}
+              </Stack>
 
               <Group gap={10} wrap="nowrap">
-                <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
+                <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base mt-2 sm:mt-0">
                   Showing {offset + "-" + (+offset + 8)} products of{" "}
                   {data?.count}
                 </Text>
-                <Group className="gap-0 hidden md:flex " wrap="nowrap">
+                <Group className="gap-0 hidden md:flex mt-2 sm:mt-0" wrap="nowrap">
                   <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
                     Sort By:
                   </Text>
@@ -213,10 +224,10 @@ function ProductsPage() {
                   />
                 </Group>
                 <ActionIcon
-                  className={`bg-gray-100 p-2  rounded-full w-8 h-8 md:hidden`}
+                  className={`bg-gray-100   rounded-full w-5 h-5 md:hidden mt-1`}
                   onClick={() => setIsOpen(!isOpen)}
                 >
-                  <img src={filtericon} alt="" />
+                  <img src={filtericon} alt="" className="w-4" />
                 </ActionIcon>
               </Group>
             </Flex>
@@ -226,7 +237,7 @@ function ProductsPage() {
                 [1, 2, 3, 4, 5, 6, 7, 8, 9].map((prod) => (
                   <div
                     key={prod}
-                    className="max-w-[280px] h-[350px] flex flex-col justify-between"
+                    className="max-w-[280px] h-[280px] flex flex-col justify-between"
                   >
                     <Skeleton className="h-[75%] w-full " />
                     <Skeleton className="h-[8%] w-[70%] rounded-md" />
@@ -256,11 +267,11 @@ function ProductsPage() {
               siblings={smallScreen ? 0 : 2}
             >
               <Group gap={2} my="xl">
-                <Pagination.First icon={IconArrowBarToLeft} />
+                <Pagination.First icon={IconArrowBarToLeft} hidden = {smallScreen} />
                 <Pagination.Previous icon={IconArrowLeft} className="mr-auto" />
                 <Pagination.Items />
                 <Pagination.Next icon={IconArrowRight} className="ml-auto" />
-                <Pagination.Last icon={IconArrowBarToRight} />
+                <Pagination.Last icon={IconArrowBarToRight} hidden = {smallScreen}  />
               </Group>
             </Pagination.Root>
           </div>

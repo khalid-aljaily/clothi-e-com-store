@@ -10,7 +10,6 @@ function Images({ data }) {
   };
 
   return (
-    <Flex direction={{ base: "column", md: "row" }} className='flex-1'>
       <Flex
         gap={14}
         direction={{ base: "column-reverse", md: "row" }}
@@ -19,23 +18,24 @@ function Images({ data }) {
         <Flex
           direction={{ base: "row", md: "column" }}
           gap={14}
-          className="flex-[1]"
+          className="flex-[1] "
           justify={'space-between'}
+          
         >
-          <div className="cursor-pointer">
+          <div className="cursor-pointer ">
             {!data ? (
-              <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500 border-[3px]" />
+              <Skeleton className=" min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover border-gray-500 border-[3px]" />
             ) : (
               <Image
                 src={data?.payload.products[0]?.images[0]?.url}
-                className="aspect-square rounded-3xl object-cover alt-image border-gray-500 border-[3px]"
+                className=" aspect-square rounded-3xl object-cover alt-image border-gray-500 border-[3px]"
                 onClick={(e) => { changeImage(e.currentTarget) }}
               />
             )}
           </div>
           <div className="cursor-pointer">
             {!data ? (
-              <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500" />
+              <Skeleton className=" min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover  border-gray-500" />
             ) : (
               <Image
                 src={data?.payload.products[0].altImages&&data.payload.products[0].altImages[0]?.url?.replace(/50(?!.*50.*50)/g, '180')}
@@ -46,7 +46,7 @@ function Images({ data }) {
           </div>
           <div className="cursor-pointer">
             {!data ? (
-              <Skeleton className="aspect-square rounded-3xl object-cover alt-image border-gray-500" />
+              <Skeleton className="min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover  border-gray-500" />
             ) : (
               <Image
                 src={data?.payload.products[0].altImages&&data.payload.products[0].altImages[1]?.url?.replace(/50(?!.*50.*50)/g, '180')}
@@ -67,7 +67,6 @@ function Images({ data }) {
           )}
         </div>
       </Flex>
-    </Flex>
   );
 }
 

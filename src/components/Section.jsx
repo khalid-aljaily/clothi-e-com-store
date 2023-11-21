@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { Button, Skeleton } from "@mantine/core";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import SectionCard from "./SectionCard";
 
 function Section({ title, sortID }) {
+  const navigate = useNavigate()
   const { data, refetch } = useQuery({
     queryKey: [title],
     queryFn: async () => {
@@ -79,7 +80,7 @@ function Section({ title, sortID }) {
             {[1, 2, 3, 4].map((prod) => (
               <div
                 key={prod}
-                className="w-[280px] h-[280px] flex flex-col justify-between snap-center "
+                className="w-[280px] h-[280px] shrink-0 flex flex-col justify-between snap-center "
               >
                 <Skeleton className="h-[75%] w-full " />
                 <Skeleton className="h-[8%] w-[70%] rounded-md" />
@@ -97,11 +98,16 @@ function Section({ title, sortID }) {
           w={218}
           h={52}
           radius={50}
+          onClick={()=>{
+            navigate("/shop?" + "CN=Department:Clothing",{state:sortID})
+            window.scrollTo({
+            top: 0,
+            behavior: 'instant',
+          })}}
         >
-          <Link to={"/shop?" + "CN=Department:Clothing"} state={sortID}>
             View All
-          </Link>
         </Button>
+          
       ) : null}
     </div>
   );

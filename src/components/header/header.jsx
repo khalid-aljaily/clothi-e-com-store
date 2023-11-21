@@ -87,7 +87,7 @@ export function HeaderMegaMenu() {
     setSearchMode(!searchMode);
   };
   return (
-    <Box py={{ base: 20, xs: 24 }} px={{ md: 70 }}>
+    <Box py={{ base: 10, xs: 24 }} px={{ md: 70 }}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%" align="center" wrap="nowrap">
           <Burger
@@ -223,8 +223,8 @@ export function HeaderMegaMenu() {
         withCloseButton
         opened={loginModalOpen}
         onClose={() => setLoginModalOpen(false)}
-        size={600}
-        classNames={{ header: "h-0 pt-0", close: "mt-16 mr-2" }}
+        classNames={{ header: "h-0 pt-0", close: "mt-16 mr-2", }}
+        yOffset={80}
       >
         <LoginForm />
       </Modal>

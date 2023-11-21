@@ -85,6 +85,7 @@ function Hero() {
           />
           <div className="max-w-[700px]  -mb-40 h-full overflow-hidden">
             <img
+              loading="eager"
               src={hero}
               alt="hero image"
             />
