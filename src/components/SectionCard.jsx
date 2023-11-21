@@ -6,15 +6,18 @@ function SectionCard({ product }) {
   return (
     <Card p={0} radius={0} className="shrink-0 flex flex-col h-full">
       <div className="aspect-square w-[280px] overflow-hidden rounded-2xl">
-        <Image  src={product.image.url.replaceAll("180", "300")} className=" " />
+        <Image src={product.image.url.replaceAll("180", "300")} className=" " />
       </div>
       <Text
         ff={"Satoshi-bold"}
         className="text-[20px] mt-5 hover:underline cursor-pointer"
-        onClick={() => {navigate(`/product/${product.webID}`);window.scrollTo({
-          top: 0,
-          behavior: 'instant',
-        })}}
+        onClick={() => {
+          navigate(`/product/${product.webID}`);
+          window.scrollTo({
+            top: 0,
+            behavior: "instant",
+          });
+        }}
       >
         {product.productTitle}
       </Text>

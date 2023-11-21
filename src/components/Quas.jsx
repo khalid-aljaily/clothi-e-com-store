@@ -7,7 +7,6 @@ function Quas({ id }) {
   const [faq, setFaq] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
-
   useEffect(() => {
     const options = {
       method: "GET",
@@ -23,7 +22,7 @@ function Quas({ id }) {
         "X-RapidAPI-Host": "kohls.p.rapidapi.com",
       },
     };
-  
+
     const fetchQnas = async () => {
       try {
         const response = await axios.request(options);
@@ -31,19 +30,19 @@ function Quas({ id }) {
         setIsLoading(false);
       } catch (err) {
         if (err.response?.status === 429) {
-            try {
-              const newOptions = {
-                ...options,
-                headers: {
-                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
-                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-                },
-              };
-              const newResponse = await axios.request(newOptions);
-              setFaq(newResponse.data.payload);
-              setIsLoading(false);
-            } catch (err) {
-              if (err.response?.status === 429) {
+          try {
+            const newOptions = {
+              ...options,
+              headers: {
+                "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
+                "X-RapidAPI-Host": "kohls.p.rapidapi.com",
+              },
+            };
+            const newResponse = await axios.request(newOptions);
+            setFaq(newResponse.data.payload);
+            setIsLoading(false);
+          } catch (err) {
+            if (err.response?.status === 429) {
               const newOptions = {
                 ...options,
                 headers: {
@@ -51,22 +50,20 @@ function Quas({ id }) {
                   "X-RapidAPI-Host": "kohls.p.rapidapi.com",
                 },
               };
-  
+
               const newResponse = await axios.request(newOptions);
               setFaq(newResponse.data.payload);
               setIsLoading(false);
-              
             }
-            }
-          
+          }
         } else {
           console.error("err:", err.message);
         }
       }
-    }
-    fetchQnas()
-  },[])
-  
+    };
+    fetchQnas();
+  }, []);
+
   const handleAccordionToggle = (index) => {
     setActiveItem((prevItem) => (prevItem === index ? null : index));
   };

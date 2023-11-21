@@ -33,7 +33,7 @@ function ProductsPage() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(true);
   const smallScreen = useMediaQuery("(max-width:768px)");
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const getUrlProperties = (url) => {
     const match = url.match(/CN=([^&]+)/);
@@ -144,9 +144,9 @@ function ProductsPage() {
     };
   }, []);
 
-  const handleClear = () =>{
-    navigate({ pathname: "/shop", search: location.search })
-  }
+  const handleClear = () => {
+    navigate({ pathname: "/shop", search: location.search });
+  };
   useEffect(() => {
     refetch();
   }, [properties, offset]);
@@ -178,23 +178,30 @@ function ProductsPage() {
           <div className=" flex-1">
             <Flex className="justify-between items-end mb-4 md:mb-6 ">
               <Stack gap={0}>
-              <Group className="items-center gap-2">
-                <Title
-                  order={3}
-                  className="font-Satoshi-bold text-2xl lg:text-4xl "
-                >
-                  Shop
-                </Title>
-                <Loader
-                  size={"12px"}
-                  className={`mt-2 ${!isFetching && "hidden"}`}
-                  type="bars"
-                />
-              </Group>
-             { location.hash&&
-             <Text className="text-[10px] sm:text-base inline">Results for: "{location.hash.slice(1)}" 
-              <button className="text-red-600 active:translate-y-[1px] ml-2 text-[10px] sm:text-[14px]  inline hover:underline" onClick={handleClear}>Clear</button>
-              </Text>}
+                <Group className="items-center gap-2">
+                  <Title
+                    order={3}
+                    className="font-Satoshi-bold text-2xl lg:text-4xl "
+                  >
+                    Shop
+                  </Title>
+                  <Loader
+                    size={"12px"}
+                    className={`mt-2 ${!isFetching && "hidden"}`}
+                    type="bars"
+                  />
+                </Group>
+                {location.hash && (
+                  <Text className="text-[10px] sm:text-base inline">
+                    Results for: "{location.hash.slice(1)}"
+                    <button
+                      className="text-red-600 active:translate-y-[1px] ml-2 text-[10px] sm:text-[14px]  inline hover:underline"
+                      onClick={handleClear}
+                    >
+                      Clear
+                    </button>
+                  </Text>
+                )}
               </Stack>
 
               <Group gap={10} wrap="nowrap">
@@ -202,7 +209,10 @@ function ProductsPage() {
                   Showing {offset + "-" + (+offset + 8)} products of{" "}
                   {data?.count}
                 </Text>
-                <Group className="gap-0 hidden md:flex mt-2 sm:mt-0" wrap="nowrap">
+                <Group
+                  className="gap-0 hidden md:flex mt-2 sm:mt-0"
+                  wrap="nowrap"
+                >
                   <Text className="text-gray-700 text-[12px] sm:text-[14px] lg:text-base ">
                     Sort By:
                   </Text>
@@ -267,11 +277,17 @@ function ProductsPage() {
               siblings={smallScreen ? 0 : 2}
             >
               <Group gap={2} my="xl">
-                <Pagination.First icon={IconArrowBarToLeft} hidden = {smallScreen} />
+                <Pagination.First
+                  icon={IconArrowBarToLeft}
+                  hidden={smallScreen}
+                />
                 <Pagination.Previous icon={IconArrowLeft} className="mr-auto" />
                 <Pagination.Items />
                 <Pagination.Next icon={IconArrowRight} className="ml-auto" />
-                <Pagination.Last icon={IconArrowBarToRight} hidden = {smallScreen}  />
+                <Pagination.Last
+                  icon={IconArrowBarToRight}
+                  hidden={smallScreen}
+                />
               </Group>
             </Pagination.Root>
           </div>

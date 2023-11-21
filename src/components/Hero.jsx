@@ -1,10 +1,10 @@
 import { Button, Flex, Group, Stack, Text } from "@mantine/core";
 import { brands } from "../utils/brands&media";
 import { useNavigate } from "react-router-dom";
-import hero from '../assets/ccfd8aa5825862cdb9604a4fb4930464 (1).jpg'
-import victor from '../assets/Vector.svg'
+import hero from "../assets/ccfd8aa5825862cdb9604a4fb4930464 (1).jpg";
+import victor from "../assets/Vector.svg";
 function Hero() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <>
       <Flex
@@ -27,7 +27,7 @@ function Hero() {
             Browse through our diverse range of meticulously crafted garments,
             designed to bring out your individuality and cater to your sense of
             style.
-          </Text>       
+          </Text>
           <Button
             bg={"dark.9"}
             w={{ md: 210 }}
@@ -37,9 +37,7 @@ function Hero() {
             fs={16}
             onClick={() => navigate("/shop")}
           >
-            
             Shop Now
-            
           </Button>
           <Group className="justify-between">
             <Stack gap={0}>
@@ -79,16 +77,12 @@ function Hero() {
         </Stack>
         <div className="relative  self-end ">
           <img
-            src={victor} 
+            src={victor}
             alt="victor"
             className="absolute top-11 w-20 right-4 z-10"
           />
           <div className="max-w-[700px]  -mb-40 h-full overflow-hidden">
-            <img
-              loading="eager"
-              src={hero}
-              alt="hero image"
-            />
+            <img loading="eager" src={hero} alt="hero image" />
           </div>
 
           <img

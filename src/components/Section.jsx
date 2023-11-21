@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SectionCard from "./SectionCard";
 
 function Section({ title, sortID }) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { data, refetch } = useQuery({
     queryKey: [title],
     queryFn: async () => {
@@ -98,16 +98,16 @@ function Section({ title, sortID }) {
           w={218}
           h={52}
           radius={50}
-          onClick={()=>{
-            navigate("/shop?" + "CN=Department:Clothing",{state:sortID})
+          onClick={() => {
+            navigate("/shop?" + "CN=Department:Clothing", { state: sortID });
             window.scrollTo({
-            top: 0,
-            behavior: 'instant',
-          })}}
+              top: 0,
+              behavior: "instant",
+            });
+          }}
         >
-            View All
+          View All
         </Button>
-          
       ) : null}
     </div>
   );

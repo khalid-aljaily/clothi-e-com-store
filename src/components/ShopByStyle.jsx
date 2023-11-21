@@ -16,14 +16,13 @@ function ShopByStyle() {
       <Grid gutter={20}>
         <Grid.Col span={{ base: 12, md: 5 }}>
           <div
-            onClick={() =>{
+            onClick={() => {
               window.scrollTo(0, 0);
               navigate(
                 `/shop?CN=Department:Clothing+Occasion:Casual${location.hash}`,
                 { state: location.state }
-              )
-            }
-            }
+              );
+            }}
             className="bg-white max-h-52 md:max-h-60 overflow-hidden relative rounded-3xl cursor-pointer"
           >
             <p className="absolute font-bold text-2xl md:text-4xl left-8 top-5 z-10">
@@ -38,13 +37,13 @@ function ShopByStyle() {
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 7 }}>
           <div
-            onClick={() =>{
+            onClick={() => {
               window.scrollTo(0, 0);
               navigate(
                 `/shop?CN=Department:Clothing+Occasion:Career${location.hash}`,
                 { state: location.state }
-              )}
-            }
+              );
+            }}
             className="max-h-52 md:max-h-60 overflow-hidden rounded-3xl bg-[#fbfafa] relative cursor-pointer"
           >
             <p className="absolute font-bold text-2xl md:text-4xl left-8 top-5 z-10">
@@ -59,14 +58,13 @@ function ShopByStyle() {
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 7 }}>
           <div
-            onClick={() =>{
+            onClick={() => {
               window.scrollTo(0, 0);
               navigate(
                 `/shop?CN=Department:Clothing+Occasion:Dress${location.hash}`,
                 { state: location.state }
-                )
-              }
-            }
+              );
+            }}
             className="max-h-52 md:max-h-60 overflow-hidden bg-white rounded-3xl relative cursor-pointer"
           >
             <p className="absolute font-bold text-2xl md:text-4xl left-8 top-5 z-10">
@@ -77,14 +75,13 @@ function ShopByStyle() {
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 5 }}>
           <div
-            onClick={() =>{
+            onClick={() => {
               window.scrollTo(0, 0);
               navigate(
                 `/shop?CN=Department:Clothing+Occasion:Active${location.hash}`,
                 { state: location.state }
-                )
-              }
-            }
+              );
+            }}
             className="bg-white max-h-52 md:max-h-60 overflow-hidden rounded-3xl relative cursor-pointer"
           >
             <p className="absolute font-bold text-2xl md:text-4xl left-8 top-5 z-10">

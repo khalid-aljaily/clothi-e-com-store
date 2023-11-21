@@ -37,17 +37,16 @@ export function InputWithButton({ searchMode, setSearchMode }) {
             ml={16}
             variant="subtle"
             onClick={() => {
-              value &&
-                setValue('')
-                navigate(
-                  location.search
-                    ? {
-                        pathname: "/shop",
-                        search: location.search,
-                        hash: value,
-                      }
-                    : { pathname: "/shop", hash: value }
-                );
+              value && setValue("");
+              navigate(
+                location.search
+                  ? {
+                      pathname: "/shop",
+                      search: location.search,
+                      hash: value,
+                    }
+                  : { pathname: "/shop", hash: value }
+              );
             }}
           >
             <IconSearch stroke={2} color={theme.colors.dark[0]} />
@@ -55,25 +54,28 @@ export function InputWithButton({ searchMode, setSearchMode }) {
         }
         radius={50}
         rightSection={
-            <CloseButton
-              hidden={value === ""}
-              size={20}
-              stroke={2}
-              className="text-red-600 mr-2   hover:shadow-2xl "
-              onClick={handleClose}
-            />
+          <CloseButton
+            hidden={value === ""}
+            size={20}
+            stroke={2}
+            className="text-red-600 mr-2   hover:shadow-2xl "
+            onClick={handleClose}
+          />
         }
       />
-      <Modal 
+      <Modal
         transitionProps={{}}
         opened={searchMode}
         withOverlay={false}
         withCloseButton={false}
         className="h-fit mt-9 "
-        classNames={{ inner: "mt-6 absolute", body: "p-1 ", content: "shadow-sm " }}
-        lockScroll ={ false}
+        classNames={{
+          inner: "mt-6 absolute",
+          body: "p-1 ",
+          content: "shadow-sm ",
+        }}
+        lockScroll={false}
         yOffset={30}
-        
       >
         <TextInput
           onChange={(event) => setValue(event.target.value)}
@@ -92,17 +94,16 @@ export function InputWithButton({ searchMode, setSearchMode }) {
               ml={5}
               variant="subtle"
               onClick={() => {
-                value &&
-                  setValue('')
-                  navigate(
-                    location.search
-                      ? {
-                          pathname: "/shop",
-                          search: location.search,
-                          hash: value,
-                        }
-                      : { pathname: "/shop", hash: value }
-                  );
+                value && setValue("");
+                navigate(
+                  location.search
+                    ? {
+                        pathname: "/shop",
+                        search: location.search,
+                        hash: value,
+                      }
+                    : { pathname: "/shop", hash: value }
+                );
               }}
             >
               <IconSearch stroke={2} color={theme.colors.dark[0]} />
@@ -110,12 +111,12 @@ export function InputWithButton({ searchMode, setSearchMode }) {
           }
           radius={"lg"}
           rightSection={
-              <CloseButton
-                size={20}
-                stroke={2}
-                className="text-red-600 mr-2   hover:shadow-2xl "
-                onClick={handleClose}
-              />
+            <CloseButton
+              size={20}
+              stroke={2}
+              className="text-red-600 mr-2   hover:shadow-2xl "
+              onClick={handleClose}
+            />
           }
         />
       </Modal>

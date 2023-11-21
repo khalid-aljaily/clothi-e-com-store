@@ -26,6 +26,7 @@ import profile from '../../assets/profile.svg'
 import { cartContext } from "../../App";
 import { LoginForm } from "./LoginForm";
 import cart from '../../assets/cartblack.svg'
+
 export function HeaderMegaMenu() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
