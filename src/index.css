@@ -25,6 +25,10 @@ p{
     font-family: 'Satoshi-medium' !important;
 }
 
+*{
+  -webkit-tap-highlight-color: transparent;
+}
+
 .detalils-container>a {
 display: none;
 }
