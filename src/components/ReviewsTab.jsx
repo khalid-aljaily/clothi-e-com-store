@@ -158,8 +158,8 @@ function ReviewsTab({ id }) {
             withCloseButton
             opened={loginModalOpen}
             onClose={() => setLoginModalOpen(false)}
-            size={600}
             classNames={{ header: "h-0 pt-0", close: "mt-16 mr-2" }}
+            yOffset={80}
           >
             <LoginForm />
           </Modal>
@@ -224,7 +224,7 @@ function ReviewsTab({ id }) {
         {reviews.length > 6 && (
           <Button
             variant="default"
-            hidden={reviews.length == 6}
+            hidden={offset === 1}
             onClick={() => fetchLess()}
             w={240}
             h={60}
