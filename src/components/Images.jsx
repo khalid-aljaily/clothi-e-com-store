@@ -1,15 +1,13 @@
 import { Flex, Image, Skeleton } from "@mantine/core";
-import { useState } from "react";
+import { useContext, useRef, useState } from "react";
+import { ProductContext } from "../context/ProductContext";
 
 function Images({ data }) {
-  const [src, setSrc] = useState(
-    data?.payload?.products[0]?.images[0]?.url?.replace(
-      /180(?!.*180.*180)/g,
-      "700"
-    )
-  );
+  const {isLoading} = useContext(ProductContext)
+
+  const mainImg = useRef()
   const changeImage = (img) => {
-    setSrc(img.src.replaceAll("180", "800"));
+    mainImg.current.src = img.src.replaceAll("180", "700");
     [...document.querySelectorAll(".alt-image")].forEach((im) =>
       im.classList.remove("border-[3px]")
     );
@@ -29,7 +27,7 @@ function Images({ data }) {
         justify={"space-between"}
       >
         <div className="cursor-pointer ">
-          {!data ? (
+          {isLoading ? (
             <Skeleton className=" min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover border-gray-500 border-[3px]" />
           ) : (
             <Image
@@ -42,7 +40,7 @@ function Images({ data }) {
           )}
         </div>
         <div className="cursor-pointer">
-          {!data ? (
+          {isLoading ? (
             <Skeleton className=" min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover  border-gray-500" />
           ) : (
             <Image
@@ -61,7 +59,7 @@ function Images({ data }) {
           )}
         </div>
         <div className="cursor-pointer">
-          {!data ? (
+          {isLoading ? (
             <Skeleton className="min-w-[25vw] md:min-w-[15vw] lg:min-w-0 aspect-square rounded-3xl object-cover  border-gray-500" />
           ) : (
             <Image
@@ -81,12 +79,12 @@ function Images({ data }) {
         </div>
       </Flex>
       <div className="shrink-0 aspect-square overflow-hidden rounded-3xl flex-[3] main-image">
-        {!data ? (
+        {isLoading ? (
           <Skeleton className="h-full w-full" c={"lime"} />
         ) : (
           <Image
+          ref={mainImg}
             src={
-              src ||
               data?.payload?.products[0].images[0]?.url?.replace(
                 /180(?!.*180.*180)/g,
                 "700"

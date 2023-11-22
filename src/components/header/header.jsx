@@ -23,7 +23,7 @@ import axios from "axios";
 import { InputWithButton } from "../Search";
 import MobileShopComponent from "./MobileShopComponent";
 import profile from '../../assets/profile.svg'
-import { cartContext } from "../../App";
+import { cartContext } from "../../context/CartContext";
 import { LoginForm } from "./LoginForm";
 import cart from '../../assets/cartblack.svg'
 

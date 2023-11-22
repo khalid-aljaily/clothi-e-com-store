@@ -1,8 +1,11 @@
 import { Badge, Card, Group, Image, Text } from "@mantine/core";
 import StarRating from "./Stars";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { ProductContext } from "../context/ProductContext";
 
 function ProductCard({ prod }) {
+  const {setIsLoading} = useContext(ProductContext)
   return (
     <Card radius={0} p={0} className="max-w-[280px] 2flex flex-col">
       <div className="aspect-square w-full overflow-hidden rounded-2xl">
@@ -14,6 +17,7 @@ function ProductCard({ prod }) {
       <Link
         to={`/product/${prod.webID}`}
         onClick={() => {
+          setIsLoading(()=>true)
           window.scrollTo({
             top: 0,
             behavior: "instant",

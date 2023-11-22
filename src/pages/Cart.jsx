@@ -17,8 +17,9 @@ import {
   IconTag,
   IconTrash,
 } from "@tabler/icons-react";
-import { cartContext } from "../App";
+import { cartContext } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import { ProductContext } from "../context/ProductContext";
 
 function Cart() {
   const { cartItems } = useContext(cartContext);
@@ -158,6 +159,7 @@ function Cart() {
 
 const CartCard = ({ item }) => {
   const { cartItems, setCartItems } = useContext(cartContext);
+  const { setIsLoading, data } = useContext(ProductContext);
   const navigate = useNavigate();
   const increaseCount = () => {
     setCartItems([
@@ -167,6 +169,15 @@ const CartCard = ({ item }) => {
           : cartItem
       ),
     ]);
+  };
+
+  const handleLink = () => {
+    {
+      navigate(`/product/${item.id}`);
+      if (data.payload.products[0].webID != item.id) {
+        setIsLoading(true);
+      }
+    }
   };
   const decreaseCount = () => {
     setCartItems([
@@ -178,7 +189,14 @@ const CartCard = ({ item }) => {
     ]);
   };
   const removeItem = () => {
-    setCartItems([...cartItems.filter((cartItem) => cartItem.id != item.id)]);
+    setCartItems((prevCartItems) =>
+      prevCartItems.filter(
+        (cartItem) =>
+          cartItem.id !== item.id ||
+          cartItem.color !== item.color ||
+          cartItem.size !== item.size
+      )
+    );
   };
 
   return (
@@ -194,7 +212,7 @@ const CartCard = ({ item }) => {
           order={3}
           className=" sm:mb-2 text-[12px]
                 sm:text-base mt-1 w-[90%] hover:underline cursor-pointer"
-          onClick={() => navigate(`/product/${item.id}`)}
+          onClick={handleLink}
         >
           {item.name}
         </Title>

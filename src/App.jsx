@@ -8,14 +8,12 @@ import Footer from "./components/Footer";
 import ProductDetail from "./pages/ProductDetail";
 import ProductsPage from "./pages/ProductsPage";
 import Cart from "./pages/Cart";
-import { createContext, useState } from "react";
-
-export const cartContext = createContext();
+import CartContext from "./context/CartContext";
+import { ProductProvider } from "./context/ProductContext";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const client = new QueryClient();
-  const [cartItems, setCartItems] = useState([]);
-
   const theme = createTheme({
     primaryColor: "dark",
     defaultRadius: "lg",
@@ -25,15 +23,18 @@ function App() {
   return (
     <QueryClientProvider client={client}>
       <MantineProvider theme={theme}>
-        <cartContext.Provider value={{ cartItems, setCartItems }}>
+        <CartContext>
           <HeaderMegaMenu />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/shop" element={<ProductsPage />} />
-            <Route path="/cart" element={<Cart />} />
-          </Routes>
-        </cartContext.Provider>
+          <ReactQueryDevtools initialIsOpen={true} />
+          <ProductProvider>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/shop" element={<ProductsPage />} />
+              <Route path="/cart" element={<Cart />} />
+            </Routes>
+          </ProductProvider>
+        </CartContext>
         <Footer />
       </MantineProvider>
     </QueryClientProvider>

@@ -1,8 +1,6 @@
 import {
   ActionIcon,
-  Anchor,
   Badge,
-  Breadcrumbs,
   Button,
   Divider,
   Flex,
@@ -11,27 +9,24 @@ import {
   Text,
   Title,
 } from "@mantine/core";
-import arrow from "../assets/Frame.svg";
-
 import StarRating from "../components/Stars";
 import { useContext, useEffect, useRef, useState } from "react";
 import { IconCheck, IconMinus, IconPlus } from "@tabler/icons-react";
-import axios from "axios";
 import Images from "../components/Images";
 import Details from "../components/Details";
 import Section from "../components/Section";
 import { useParams } from "react-router-dom";
-import { cartContext } from "../App";
-import { useQuery } from "@tanstack/react-query";
+import { cartContext } from "../context/CartContext";
+import { ProductContext } from "../context/ProductContext";
 
 function ProductDetail() {
   const { id } = useParams();
   const [count, setCount] = useState(1);
-  const [swatchColor, setSwatchColor] = useState("");
   const [size, setSize] = useState("Medium");
   const descriptionRef = useRef();
   const { cartItems, setCartItems } = useContext(cartContext);
-
+  const { data, isLoading, swatchColor, setSwatchColor } =
+    useContext(ProductContext);
   const changeSize = (e) => {
     let btns = document.querySelectorAll(".size-btn");
     btns.forEach((btn) => {
@@ -42,20 +37,27 @@ function ProductDetail() {
   };
 
   const addToCart = () => {
-    if (data)
-      if (
-        cartItems.some((item) => item.id == data?.payload.products[0].webID)
-      ) {
-        setCartItems([
-          ...cartItems.map((item) =>
-            item.id == data?.payload.products[0].webID
+    if (data) {
+      const existingCartItem = cartItems.find(
+        (item) =>
+          item.id === data?.payload.products[0].webID &&
+          item.size === size &&
+          item.color === swatchColor
+      );
+
+      if (existingCartItem) {
+        setCartItems((prevCartItems) =>
+          prevCartItems.map((item) =>
+            item.id === data?.payload.products[0].webID &&
+            item.size === size &&
+            item.color === swatchColor
               ? { ...item, count: count + item.count }
               : item
-          ),
-        ]);
-      } else
-        setCartItems([
-          ...cartItems,
+          )
+        );
+      } else {
+        setCartItems((prevCartItems) => [
+          ...prevCartItems,
           {
             id: data?.payload.products[0].webID,
             name: data?.payload.products[0].productTitle,
@@ -68,75 +70,15 @@ function ProductDetail() {
             color: swatchColor,
           },
         ]);
-  };
-
-  const options = {
-    method: "GET",
-    url: "https://kohls.p.rapidapi.com/products/detail",
-    params: { webID: id },
-    headers: {
-      "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
-      "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-    },
-  };
-  const { data } = useQuery({
-    queryKey: ["productDetail"],
-    queryFn: async () => {
-      const options = {
-        method: "GET",
-        url: "https://kohls.p.rapidapi.com/products/detail",
-        params: { webID: id },
-        headers: {
-          "X-RapidAPI-Key": import.meta.env.VITE_API_KEY,
-          "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-        },
-      };
-      try {
-        const response = await axios.request(options);
-        setSwatchColor(response.data.payload.products[0].swatchImages[0].color);
-        return response.data;
-      } catch (err) {
-        if (err.response.status == 429) {
-          try {
-            const newOptions = {
-              ...options,
-              headers: {
-                "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_2,
-                "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-              },
-            };
-            const newResponse = await axios.request(newOptions);
-            setSwatchColor(
-              newResponse.data.payload.products[0].swatchImages[0].color
-            );
-            return newResponse.data;
-          } catch (err) {
-            if (err.response.status == 429) {
-              const newOptions = {
-                ...options,
-                headers: {
-                  "X-RapidAPI-Key": import.meta.env.VITE_API_KEY_3,
-                  "X-RapidAPI-Host": "kohls.p.rapidapi.com",
-                },
-              };
-              const newResponse = await axios.request(newOptions);
-              setSwatchColor(
-                newResponse.data.payload.products[0].swatchImages[0].color
-              );
-              return newResponse.data;
-            }
-          }
-        }
       }
-    },
-    staleTime: "infinity",
-  });
+    }
+  };
 
   useEffect(() => {
-    if (data)
+    if (!isLoading)
       descriptionRef.current.innerHTML =
         data.payload.products[0].description.shortDescription;
-  }, [data]);
+  }, [isLoading]);
 
   return (
     <>
@@ -146,17 +88,17 @@ function ProductDetail() {
           <Images data={data} />
           <div className="flex-1">
             <div>
-              {!data ? (
+              {isLoading ? (
                 <>
                   <Skeleton height={25} />
                   <Skeleton height={25} width={"40%"} mt={5} />
                 </>
               ) : (
                 <Title className="uppercase mb-1 " order={2}>
-                  {data.payload.products[0].productTitle}
+                  {data?.payload.products[0].productTitle}
                 </Title>
               )}
-              {!data ? (
+              {isLoading ? (
                 <div className="flex gap-2 my-2">
                   <Skeleton height={35} width={200} />
                   <Skeleton height={35} width={50} />
@@ -171,7 +113,7 @@ function ProductDetail() {
                 </div>
               )}
               <Group gap={20} className="">
-                {!data ? (
+                {isLoading ? (
                   <Skeleton height={40} w={100} mb={5} />
                 ) : (
                   <Group
@@ -212,7 +154,7 @@ function ProductDetail() {
                   </Group>
                 )}
               </Group>
-              {!data ? (
+              {isLoading ? (
                 <div className="mb-2">
                   <Skeleton height={25} />
                   <Skeleton height={25} width={"60%"} mt={10} />
@@ -230,7 +172,7 @@ function ProductDetail() {
                 Select Color
               </Title>
               <div className="flex gap-2">
-                {!data
+                {isLoading
                   ? [0, 1, 2, 3, 4, 5, 6].map((n, i) => (
                       <Skeleton height={32} circle key={i} />
                     ))
@@ -319,9 +261,9 @@ function ProductDetail() {
       </div>
       <Details
         id={id}
-        brandDetails={data?.payload.products[0].aboutTheBrand}
-        details={data?.payload.products[0].productDetails}
-        brand={data?.payload.products[0].brand}
+        brandDetails={!isLoading && data?.payload.products[0].aboutTheBrand}
+        details={!isLoading && data?.payload.products[0].productDetails}
+        brand={!isLoading && data?.payload.products[0].brand}
       />
       <Section title="you might also like" />
     </>
