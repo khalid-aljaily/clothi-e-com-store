@@ -10,7 +10,6 @@ import ProductsPage from "./pages/ProductsPage";
 import Cart from "./pages/Cart";
 import CartContext from "./context/CartContext";
 import { ProductProvider } from "./context/ProductContext";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 function App() {
   const client = new QueryClient();
@@ -25,7 +24,6 @@ function App() {
       <MantineProvider theme={theme}>
         <CartContext>
           <HeaderMegaMenu />
-          <ReactQueryDevtools initialIsOpen={true} />
           <ProductProvider>
             <Routes>
               <Route path="/" element={<Home />} />
